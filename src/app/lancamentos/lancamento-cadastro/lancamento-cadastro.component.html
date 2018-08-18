@@ -1,0 +1,653 @@
+<div class="container">
+  <!-- 
+    * Aula 21.10 Configurando o HTML do formulario reativo
+    * Fazer alteracoes para configurar o nosso formulario como reativo.
+    * 
+    * Vamos comecar pela tag <form>. Primeira coisa que vamos fazer eh remover a
+    * variavel local de referencia #f. O metodo salvar(), tambem, nao precisa mais receber FormControl como 
+    * parametro. Vamos trocar a variavel #f pela propriedade formGroup, fazendo o binding da propriedade para
+    * formulario, que eh a nossa propriedade declarada na nossa Classe do Componente,
+    * LancamentoCadastroComponent.
+  -->
+  <!--form #f="ngForm" autocomplete="off" (ngSubmit)="salvar(f)"-->
+  <form autocomplete="off" (ngSubmit)="salvar()" [formGroup]="formulario">
+    <div class="ui-g">
+      <div class="ui-g-12">
+        <h1>{{ editando ? 'Edição de' : 'Novo' }} Lançamento</h1>
+      </div>
+
+      <div class="ui-g-12">
+        <!-- propriedade [options] : property binding. Informa no valor uma propriedade
+           do componente com array/lista de opções. -->
+        <!-- Variável local de referência #tipo -->
+        <!--p-selectButton name="tipo" [options]="tipos"
+            [(ngModel)]="lancamento.tipo"
+            #tipo></p-selectButton-->
+        <!-- 
+          * Aula 21.10 Configurando o HTML do formulario reativo 
+          * 
+          * A segunda coisa a alterar eh tipo. A gente nao precisa mais do ngModel, nem da variavel
+          * #tipo. O que que a gente vai definir? Vamos definir a propriedade formControlName, que eh
+          * o nome da propriedade definida no metodo configurarFormulario() da Classe do Componente,
+          * lancamento-cadastro.component.ts. Por coerencia e organizacao, foram definidos os mesmos
+          * nomes de propriedades da Classe Lancamento.
+        -->
+        <p-selectButton name="tipo" [options]="tipos"
+            formControlName="tipo"></p-selectButton>
+      </div>
+      <!-- Quando resolução do usuário a partir de um tamanho médio, 
+        vai ocupar apenas 3 colunas: ui-md-3 -->
+      <div class="ui-g-6 ui-md-3 ui-fluid">
+        <label>Vencimento</label>
+        <!-- <p-calendar> : Seletor do componente de calendário do PrimeNG. -->
+        <!-- [inline] : propriedade para exibir sempre o calendário suspenso. -->
+        <!-- [readonlyInput] : propriedade para não permitir que o usuário digite a data. -->
+        <!-- [showIcon] : propriedade para exibir ícone ao lado do calendário. -->        
+        <!--
+        <p-calendar name="vencimento" dateFormat="dd/mm/yy"
+          [inline]="false" [readonlyInput]="false" [showIcon]="false"
+          [(ngModel)]="lancamento.dataVencimento"
+          #vencimento="ngModel" required></p-calendar-->
+        <!-- 
+          * Aula 21.10 Configurando o HTML do formulario reativo 
+          * Vamos remover ngModel, a variavel #vencimento e required.
+          *
+        -->
+        <p-calendar name="vencimento" dateFormat="dd/mm/yy"
+          [inline]="false" [readonlyInput]="false" [showIcon]="false"
+          formControlName="dataVencimento"></p-calendar>
+
+        <!--app-message [control]="vencimento" error="required"
+          text="Informe uma data de vencimento"></app-message-->
+        <!-- 
+          * Aula 21.10 Configurando o HTML do formulario reativo 
+          * Na nossa tag de mensagem, a gente precisa passar o controle: [control]="vencimento". Para
+          * isso, a gente tinha a variavel #vencimento, que foi removida.
+          * Para definir o controle quando utilizamos o Formulario Reativo, definimos: 
+          * formulario.get('dataVencimento'), dessa forma, nos definimos o controle a ser passado para
+          * [control]. Como nao queremos passar o valor do controle, nao definir .value:
+          * formulario.get('dataVencimento').value.
+          *
+        -->
+        <app-message [control]="formulario.get('dataVencimento')" error="required"
+        text="Informe uma data de vencimento"></app-message>
+      </div>
+      
+      <!--div class="ui-g-6 ui-md-3 ui-fluid">
+        <label>{{ tipo.value === 'RECEITA' ? 'Recebimento' : 'Pagamento' }}</label>
+          <p-calendar dateFormat="dd/mm/yy" name="dataPagamento"
+            [(ngModel)]="lancamento.dataPagamento"></p-calendar>
+      </div-->
+        <!-- 
+          * Aula 21.10 Configurando o HTML do formulario reativo 
+          * 
+          * Aqui vamos fazer a mesma coisa: formulario.get('tipo').value.
+          * Em dataPagamento, vamos remover ngModel, a gente nao precisa mais, vamos definir
+          * formControlName como dataPagamento.
+          * 
+        -->
+      <div class="ui-g-6 ui-md-3 ui-fluid">
+          <label>{{ formulario.get('tipo').value === 'RECEITA' ? 'Recebimento' : 'Pagamento' }}</label>
+          <p-calendar dateFormat="dd/mm/yy" name="dataPagamento"
+            formControlName="dataPagamento"></p-calendar>
+      </div>
+
+      <div class="ui-g-12 ui-md-9 ui-fluid">
+        <label>Descrição</label>
+        <!-- Precisa colocar name porque vai colocar também o ngModel. -->
+        <!-- Quando coloca ngModel, está registrando esse controle no formulário. Então, o
+            Angular vai começar a gerenciar o formulário e entender que esse é um
+            controle que tem que gerenciar. -->
+        <!-- ngModel sozinho (sem ser Two-Way DataBiding [ngModel]), tem a função de
+              registrar esse controle dentro do formulário.
+        -->
+        <!-- Variável #descricao atribuindo ngModel. ngModel é exportado através dessa variável.
+            Dessa forma, tem-se acesso à instância da diretiva ngModel.
+        -->        
+        <!--input pInputText type="text" name="descricao"
+          [(ngModel)]="lancamento.descricao" #descricao="ngModel" required minlength="5"-->
+        <!--
+          * Aula 21.10 Configurando o HTML do formulario reativo 
+          * 
+          * Em descricao, vamos remover ngModel, a variavel #descricao e as duas validacoes.
+          * 
+        -->
+        <input pInputText type="text" name="descricao"
+          formControlName="descricao">
+
+        <!--app-message [control]="descricao" error="required"
+          text="Informe a descrição"></app-message-->
+        <!-- 
+          * Aula 21.10 Configurando o HTML do formulario reativo 
+          * Na nossa tag de mensagem, a gente precisa passar o controle: [control]="descricao". Para
+          * isso, a gente tinha a variavel #descricao, que foi removida.
+          * Para definir o controle quando utilizamos o Formulario Reativo, definimos: 
+          * formulario.get('descricao').
+          *
+        -->
+        <!-- 
+          * Aula 21.11. Criando Validacoes Customizadas
+          * Vamos alterar para, ao inves de ser definido o nome da validacao como required, ser definido como obrigatoriedade.          
+        -->
+        <!--app-message [control]="formulario.get('descricao')" error="required"
+          text="Informe a descrição"></app-message-->                  
+          <app-message [control]="formulario.get('descricao')" error="obrigatoriedade"
+              text="Informe a descrição"></app-message>          
+        <!-- Operador Elvis ?: Se errors estiver undefined ou null, não continua a 
+          avaliação da expressão, dessa cadeia de propriedades
+            Operador de segurança para, caso não exista a propriedade, 
+            não retornar nenhum erro. Também não retorna nada.
+        -->          
+        <!--app-message [control]="descricao" error="minlength"
+          text="Mínimo de {{ descricao.errors?.minlength?.requiredLength }} caracteres"></app-message-->
+       
+        <!--app-message [control]="formulario.get('descricao')" error="minlength"
+          text="Mínimo de {{ formulario.get('descricao').errors?.minlength?.requiredLength }} caracteres"></app-message-->
+        <!--  
+          * Aula 21.11. Criando Validacoes Customizadas
+          * Vamos trocar error="minlength" por error="tamanhoMinimo"
+        -->
+        <app-message [control]="formulario.get('descricao')" error="tamanhoMinimo"
+          text="Mínimo de {{ formulario.get('descricao').errors?.tamanhoMinimo?.tamanho }} caracteres"></app-message>          
+
+      </div>
+
+        <!-- div *ngIf="descricao.hasError('required') && descricao.dirty"
+            class="ui-message ui-messages-error">
+          Informe uma descrição.
+        </div-->
+        <!-- div *ngIf="descricao.hasError('minlength') && descricao.dirty"
+            class="ui-message ui-messages-error"-->
+            <!-- Variável descricao que referencia ngModel. ngModel possui a propriedade 
+                errors.minlength.requiredLength
+                Dentro de minlength, há um objeto javascript com 2 propriedades: requiredLength, actualLength -->
+            <!--
+          Mínimo de {{ descricao.errors.minlength.requiredLength }} caracteres. Você digitou apenas {{ descricao.errors.minlength.actualLength }}
+        </div-->
+
+      <div class="ui-g-12 ui-md-3 ui-fluid">
+        <label>Valor</label>
+        <!-- Diretiva do Currency Mask Module: currencyMask -->
+        <!-- Faz um property binding de [options], passando um array de objetos javascript -->
+        <!-- Quando adicionar ngModel, obrigatoriamente deve-se adicionar name para evitar erros -->                
+        <!--input pInputText type="text" name="valor" placeholder="0,00"
+          currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',', allowNegative: false }"
+          [(ngModel)]="lancamento.valor" required-->
+        <!-- 
+          Aula 21.10 Configurando o HTML do formulario reativo
+         -->
+         <input pInputText type="text" name="valor" placeholder="0,00"
+            currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',', allowNegative: false }"
+            formControlName="valor">
+      </div>
+
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo      
+      <div class="ui-g-12 ui-md-6 ui-fluid">
+        <label>Categoria</label>
+        <!--input pInputText type="text"-->
+        <!-- Propridade [autoWidth]. Largura automática. De acordo com o conteúdo, 
+          define a largura do dropdown. -->
+        <!-- Selecione é o que se chama de placeholder no dropdown. -->
+        <!-- Variável local #categoria que faz referência ao dropdown categoria
+        <p-dropdown [options]="categorias" placeholder="Selecione"
+          [autoWidth]="false" name="categoria"
+          ngModel #categoria="ngModel" required></p-dropdown>
+        <app-message [control]="categoria" error="required"
+            text="Informe uma categoria."></app-message>
+      -->        
+        <!--p-dropdown name="categoria" [options]="categorias"
+          placeholder="Selecione" [autoWidth]="false"
+          [(ngModel)]="lancamento.categoria.codigo" required></p-dropdown-->
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo
+        * Vamos utilizar outra propriedade: formGroupName. Na configuracao do Formulario Reativo, 
+        * categoria e pessoa sao do tipo FormGroup.
+        * Estamos utilizando a div porque ela esta englobando categoria. Vamos definir na div a propriedade
+        * formGroupName.
+        * Vamos remover ngModel e o atributo required e vamos definir o atributo formControlName para 
+        * codigo. O codigo eh referente a categoria definida em formGroupName, na div.
+      -->
+      <div class="ui-g-12 ui-md-6 ui-fluid" formGroupName="categoria">
+          <label>Categoria</label>      
+        <p-dropdown name="categoria" [options]="categorias"
+            placeholder="Selecione" [autoWidth]="false"
+            formControlName="codigo"></p-dropdown>      
+      </div>
+
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo      
+      <div class="ui-g-12 ui-md-6 ui-fluid">
+        <label>Pessoa</label>
+        <!-- Propriedade [filter]. Dropdown tem o recurso de filtrar de acordo com o 
+          que o usuário for digitando. -->        
+        <!--p-dropdown name="pessoa" [options]="pessoas" placeholder="Selecione"
+          [autoWidth]="false" [filter]="true"
+          [(ngModel)]="lancamento.pessoa.codigo" required></p-dropdown>
+      </div-->
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo      
+        * Definimos conforme acima em categoria.
+      -->
+      <div class="ui-g-12 ui-md-6 ui-fluid" formGroupName="pessoa">
+          <label>Pessoa</label>
+          <p-dropdown name="pessoa" [options]="pessoas" placeholder="Selecione"
+          [autoWidth]="false" [filter]="true"
+          formControlName="codigo"></p-dropdown>
+      </div>
+      <div class="ui-g-12 ui-fluid">
+        <label>Observação</label>
+        <!--textarea pInputTextarea rows="3" name="observacao"
+            [(ngModel)]="lancamento.observacao"></textarea>
+      -->
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo
+        * Para Observacao, eh somente definir o formControlName, removendo o ngModel.
+      -->
+        <textarea pInputTextarea rows="3" name="observacao"
+            formControlName="observacao"></textarea>            
+      </div>
+      <!-- 
+        * Aula 23.19. Upload com Componente FileUpload
+        *
+        * A partir desta aula, o que a gente vai fazer eh o Upload de Anexos de um Lancamento. Para isso, a gente vai utilizar um 
+        * Componente muito bacana do PrimeNG, que vai nos ajudar bastante com essa tarefa. 
+        *
+        * Para a gente ja comecar aqui, porque o objetivo desta aula eh a gente ja enviar um arquivo la para o S3 da Amazon, 
+        * vamos abrir o VS Code, vamos abrir, no pacote de lancamentos, a Classe do Componente de Cadastro de Lancamento, 
+        * lancamento-cadastro.component.ts e tambem o HTML, lancamento-cadastro.component.html, porque eh aqui que a gente vai 
+        * definir o anexo, obviamente, no Cadastro de Lancamento, ou seja, em lancamento-cadastro.component.html.
+        *
+        * Entao, mais para o final de lancamento-cadastro.component.html, logo debaixo de Observacao, nos vamos comecar a definir 
+        * o Componente de Upload.
+        *
+        * 1. Primeiramente, vamos copiar a div de Observacao: <div class="ui-g-12 ui-fluid">
+        * 
+        * 2. Dentro da div, antes de definir o Componente de Upload, nos precisamos adicionar esse Componente no Module. Entao,
+        * vamos em lancamento.module.ts e vamos adicionar esse Componente na Secao de Imports.
+        * Ver lancamento.module.ts.
+        * 
+        * 4. Agora, podemos utilizar a tag <p-fileUpload> do PrimeNG. 
+        * Vamos definir o atributo name como 'anexo'. Vamos definir tambem o atributo mode como 'basic'. Existem dois modos:
+        * um avancado, em que eh possivel, ate mesmo, fazer uploads de multiplos arquivos e o mais basico, onde eh definido
+        * apenas um botao na tela para que a gente selecione um arquivo por vez. E eh esse o nosso caso, por isso estamos 
+        * definindo o atributo mode como 'basic'.
+        * 
+        * 5. Vamos definir, tambem, o atributo auto como 'true', porque nos queremos que, quando o Usuario selecionar o arquivo,
+        * o Upload ja seja disparado. Se nao definirmos como 'true', vamos precisar disparar esse Upload. 
+        *
+        * 6. Vamos definir tambem o atributo maxFileSize. Definimos um valor em bytes com o tamanho maximo que a gente quer dos
+        * nossos arquivos de Upload. Entao, vamos definir um numero grande: 100000000. Definimos esse ultimo atributo mais para
+        * termos conhecimento dele, porque ele eh importante. Vamos definir o atributo chooseLabel como 'Anexar'. Vamos definir,
+        * em seguida, o atributo accept. Vamos permitir imagens, entao, definimos o valor como 'image/*' e tambem arquivos PDF,
+        * entao definimos 'application/*', que seria o correspondente a 'application/pdf'.
+        *
+        * 7. Ainda falta definirmos a URL. Para isso, vamos definir uma propriedade chamada urlUploadAnexo na Classe 
+        * lancamento-cadastro.compnent.ts e, aqui, vamos fazer o property binding com o atributo url.
+        * Vamos definir essa propriedade porque o Componente <p-fileUpload> precisa saber para onde que ele vai enviar o arquivo
+        * anexo.
+        *
+        * 8. Antes de definirmos a propriedade urlUploadAnexo em LancamentoCadastroComponent, vamos abrir lancamento.service.ts 
+        * e vamos criar o metodo que devolve essa URL, o qual vai se chamar urlUploadAnexo.
+        * Ver lancamento.service.ts.
+        * 
+        * 10. Agora, ja podemos fazer um teste. Reiniciar o Servidor, ng serve. Abrir o Browser, 
+        * em http://localhost:4200/lancamentos/1.
+        * 
+        * 11. A primeira coisa que iremos fazer eh corrigir o layout, pois o botao 'Anexar' esta ocupando todo a largura da tela. Nos
+        * queremos que ele ocupe apenas o canto direito da tela, logo abaixo do TextArea de Observacao. Para a gente fazer isso, nos
+        * vamos fazer da seguinte forma: ao inves de definir para ocupar 12 posicoes, nos vamos mandar ocupar apenas 2, no atributo
+        * class da div: ui-g-2. E vamos utilizar, aqui, tambem, a classe offset com valor 10: ui-g-offset-10, ou seja, na posicao
+        * 10, a partir do 10 que vai comecar a contar essas 2 posicoes definidas em ui-g-2, aonde vai ficar o nosso componenete, a
+        * tag <p-fileUpload>.
+        *
+        * 12. Vamos testar novamente. Esta okay. Diminuindo o tamanho da tela, ou seja, apertando F12, verificamos que o texto do 
+        * botao esta sobrepondo o icone. Para corrigir isso, vamos definir, tambem, a classe ui-md na div do botao. ui-md eh definido
+        * para telas medias e telas grandes. Vamos definir o tamanho de 2: ui-md-2 e, tambem, comecando a partir da posicao 10:
+        * ui-md-2 ui-md-offset-10. E, em ui-g-offset-10, para telas menores, nos vamos querer que ocupe a metade: a partir da 
+        * posicao 6: ui-g-offset-6. Em ui-g-2, o tamanho vai ser redefinido para 6: ui-g-6. 
+        *
+        * 13. Testando, verificamos que o texto, no botao, nao esta mais sobrepondo o icone. Aumentando o tamanho da tela, 
+        * verificamos que o layout do botao Anexar esta okay.
+        *
+        * 14. Para a gente poder testar, agora, a funcionalidade de Anexar um arquivo, nos ja podemos escolher um arquivo clicando
+        * no botao Anexar. Antes de escolher esse arquivo, abrimos, no Browser, o Servico S3 no Console da Amazon AWS, 
+        * https://s3.console.aws.amazon.com, entramos no Bucket da Algamoney, sidarta.silva-algamoney-arquivos. Ja ha 2 arquivos
+        * dentro desse Bucket, vinculados a algum Registro da nossa base de dados.
+        *
+        * 15. Agora, nos vamos enviar mais um arquivo para o S3. Entao, nos vamos clicar no botao Anexar. Vamos selecionar um 
+        * arquivo, Invoice_135559604.pdf.
+        *
+        * 16. Ao verificar no Servico S3 do Console da Amazon AWS, verificamos que nao funcionou, nao foi feito o Upload do arquivo.
+        * Verificamos que, na tag <p-fileUpload>, eh necessario substituir ponto e virgula por virgula no atributo accept:
+        * accept="image/*,application/*.
+        *
+        * 17. Agora, ao retestar, o que aconteceu eh que tivemos um problema de Permissao: Erro 401. Isso ja estavamos esperado, 
+        * porque o Componente de Upload, <p-fileUpload>, envia o arquivo diretamente por algum codigo dele. Acontece que a nossa
+        * Aplicacao eh segura, nao eh qualquer um que pode enviar Requisicao para la. Entao, a gente vai ter que configurar isso.
+        * O que que vamos fazer? Vamos utilizar um evento do nosso Componente, <p-fileUpload>, que eh o evento onBeforeSend(),
+        * o qual iremos definir com Event Binding. Como valor, vamos definir o metodo antesUploadAnexo(), passando o evento como
+        * parametro, antesUploadAnexo(event), porque, atraves desse evento que esta sendo passado como parametro, nos vamos ter 
+        * acesso a Requisicao e vamos poder setar o nosso Token para essa Requisicao que o Componente <p-fileUpload> vai fazer.
+        * Entao, vamos voltar na Classe do Componente, lancamento-cadastro.component.ts, para a definicao do metodo.
+        * Ver lancamento-cadastro.component.ts.
+        *
+        * 19. Agora, ja podemos fazer um novo teste: http://localhost:4200/lancamentos/1, clicar no botao Anexar.
+        * Aconteceu o erro: TypeError: Cannot read property 'xhr' of undefined
+        * at LancamentoCadastroComponent.push../src/app/lancamentos/lancamento-cadastro/
+        * lancamento-cadastro.component.ts.LancamentoCadastroComponent.antesUploadAnexo
+        *
+        * 20. Verificamos que eh necessario corrigir, na tag <p-fileUpload>, o valor do Event Binding, no parametro do metodo
+        * antesUploadAnexo(), para $event:
+        * (onBeforeSend)="antesUploadAnexo($event)"
+        *
+        * 21. Re-testamos: acessar http://localhost:4200/lancamentos/1, clicar no botao Anexar e selecionar o arquivo local
+        * Invoice_135559604.pdf. Verificamos, no Console do Browser, que nao ocorreu nenhum erro. Verificamos, no Servico
+        * S3 do Console da Amazon AWS, que foi feito o Upload do arquivo para o nosso Bucket, com o nome de:
+        * 030e8e4f-f2e8-4920-8f90-4d007367de64_Invoice_135559604.pdf
+        *
+        * 22. O objetivo desta aula foi cumprido. O que queriamos era enviar o arquivo la para o Servico S3 da Amazon AWS, entao,
+        * nas proximas aulas, a gente vai trabalhando as outras coisas que faltam com relacao ao Upload do Anexo.
+        * Fim da Aula 23.19. Upload com Componente FileUpload.
+        * 
+      -->
+      <!-- 
+        * Aula 23.20. Fazendo Download do Anexo
+        *
+        * E o que a gente vai fazer nesta aula eh colocar um link para poder fazer o Download do anexo. Esse link, obviamente, a 
+        * gente vai colocar o nome do anexo. Entao, a gente ja vai ter duas coisas: a gente vai exibir o nome do anexo que acabou 
+        * de ser carregado e, tambem, ja deixar o link aqui para download, caso seja necessario, caso o Usuario deseje.
+        *
+        * 1. Para fazer isso, nos vamos copiar a div: <div class="ui-g-12 fluid"> e vamos colar abaixo da div que tem o componente 
+        *  <p-fileUpload> e, dentro dessa div, vamos colocar um link: <a>. Nsse link, nos vamos definir um atributo target, porque
+        * nos queremos que abra em uma nova Aba. Vamos definir o atributo pTooltip com o valor 'Baixar anexo', 
+        * tooltipPosition como 'top' e href. Para configurar o href, nos vamos precisar do atributo anexo que tem na nossa classe
+        * de Lancamento. Inclusive, nos precisamos criar esse atributo. Vamos fechar o link: </a>
+        *
+        * 2. Vamos, agora, criar o atributo anexo em model.ts.
+        * Ver model.ts.
+        *
+        * 8. Agora, em href, fazemos um property binding com esse atributo para utilizarmos a propriedade formulario:
+        * formulario.get('urlAnexo').value.
+        *
+        * 9. De forma parecida, nos vamos configurar o texto desse link, com a expressao em {{}}, 
+        * {{ formulario.get('anexo').value }}
+        *
+        * 10. Agora, nos vamos precisar escutar o evento que nos diz que o Upload ja se encerrou, porque, quando ele se encerrar,
+        * nos pegamos o retorno e configuramos as propriedades anexo e urlAnexo. O evento que a gente tem que escutar, para isso,
+        * eh o onUpload e deve ser definido com event binding na tag <p-fileUpload>.
+        * Nos vamos, entao, criar um metodo que chamaremos de aoTerminarUploadAnexo(), passando o evento.
+        *
+        * 11. Vamos criar esse metodo na classe do Componente: lancamento-cadastro.component.ts.
+        * Ver lancamento-cadastro.component.ts.
+        *
+        * 13. Da forma como esta, ja eh possivel fazermos um teste. Antes de fazer esse teste, vamos definir, na div da tag
+        * <p-fileUpload>, a diretiva *ngIf, definindo que so queremos que o componente de Upload <p-fileUpload> apareca se nao 
+        * tivermos a propriedade anexo configurada, ou seja, se ainda nao tivermos nenhum anexo no Lancamento. Para isso, vamos
+        * utilizar a propriedade formulario:
+        * !formulario.get('anexo').value, negando esse valor: Se nao tiver valor, se anexo nao tiver valor, entao nos queremos
+        * que esse Componente <p-fileUpload> seja exibido. Caso contrario, quem vai ser exibido eh o nome desse anexo.
+        *
+        * 14. Entao, para a condicao contraria, vamos definir o contrario na div da tag de link que exibe o nome:
+        * formulario.get('anexo').value.
+        *
+        * 15. Agora, nos ja podemos testar. Lembrando que, mais para a frente, nos vamos definir um botao junto ao link para 
+        * Download do anexo para Excluir o anexo, quando for necessario substituir o anexo: quando o anexo for excluido, 
+        * obviamente o Componente de Upload <p-fileUpload> voltara a ser exibido.
+        *
+        * 16. Vamos testar, agora, para verificarmos se aparece o nome do arquivo que foi carregado:
+        * http://localhost:4200/lancamentos/1. Abrir Aba Network do Browser para verificacao. Clicar no botao Anexar. Selecionar
+        * arquivo pdf: SuaContaClaro_Ago-18.pdf. 
+        *
+        * 17. Apareceu, logo apos o campo Observacao, o link ee91d158-5be0-400c-950c-e1da8151aff8_SuaContaClaro_Ago-18.pdf, com 
+        * o nome do anexo. Aparece o tooltip 'Baixar anexo'.
+        * Vamos clicar no link.
+        * 
+        * 18. Nao abriu uma Nova Aba com o arquivo pdf, como era esperado. Verificamos que o link esta como:
+        * file://sidarta.silva-algamoney-arquivos.s3.amazonaws.com/824d4e77-0fb1-4d53-8236-5c7c3f94b6bf_Invoice_135559604.pdf,
+        * ou seja, iniciando com file:, ao inves de https:, ou seja, se definir como \\\\, o link fica com file://
+        * Para corrigir, deve-se alterar o metodo configurarUrl() da classe S3.java para:
+        * return "https:" + property.getS3().getBucket() + ".s3.amazonaws.com/" + objeto; ao inves de:
+        * return "\\\\" + property.getS3().getBucket() + ".s3.amazonaws.com/" + objeto;
+        * Ver classe S3.java.
+        *
+        * 20. Vamos re-testar, agora, repetindo os passos 16 e 17.
+        *
+        * 21. Okay, agora abriu o link https://sidarta.silva-algamoney-arquivos.s3.amazonaws.com/60071b7c-1c35-490d-af87-f427805c229b_SuaContaClaro_Ago-18.pdf
+        * com o arquivo pdf em uma nova Aba do Browser.
+        * 
+        * 22. O que iremos fazer, agora, eh definir o link do lado direito da Pagina, onde estava o botao Anexar. Vamos fazer isso 
+        * utilizando o atributo 'dir' na div do link: dir='rtl', ou seja, 'RightToLeft'.
+        * 
+        * 23. Re-testamos e funcionou: o link ficou do lado direito da Pagina.
+        *
+        * 24. Agora, o que iremos fazer eh criar um metodo na Classe do Componente para devolver o nome do anexo sem a parte 
+        * inicial unica, com numeros e letras do nome do anexo. Por exemplo: 
+        * 030e8e4f-f2e8-4920-8f90-4d007367de64_Invoice_135559604.pdf, sem a parte de:
+        * '030e8e4f-f2e8-4920-8f90-4d007367de64_' do nome do arquivo, pois nao faz sentido para o Usuario.
+        * Ver em lancamento-cadastro.component.ts.
+        *
+        * 26. Alterar o valor do link de: {{ formulario.get('anexo').value }}, para: {{ nomeAnexo }}.
+        *
+        * 27. Agora, vamos re-testar, para verificar se o nome do anexo no link vai estar sem a parte inicial com letras e numeros.
+        *
+        * 28. Okay, funcionou, apareceu o nome do anexo no link sem a parte inical com letras e numeros, ou seja, somente o nome 
+        * que continha no respectivo arquivo pdf. Clicando no arquivo, abre uma nova Aba no Browser com o arquivo pdf:
+        * https://sidarta.silva-algamoney-arquivos.s3.amazonaws.com/8c31cb3e-75f0-4244-bd40-4b3b36d560ee_download.pdf
+        *
+        * 29. O objetivo desta aula esta concluido, que eh: criar um link que contenha o nome do arquivo e a URL para fazermos
+        * o download desse arquivo.
+        * Fim da Aula 23.20. Fazendo Download do Anexo.
+      -->
+      <!--
+        * Aula 23.21. Tratando Erro de Upload
+        * Nesta aula, a gente vai criar o metodo que vai escutar o evento para o caso de algum erro no Upload. Entao, nos vamos 
+        * criar um metodo na classe lancamento-cadastro.component.ts. 
+        * 
+        * 1. Antes, nos vamos na Pagina 
+        * lancamento-cadastro.component.html e vamos, no Component <p-fileUpload>, escutar, primeiramente, o evento. O evento que
+        * nos vamos escutar eh onError(), por event binding, para o metodo erroUpload(), passando o evento.
+        *
+        * 2. Vamos, entao, definir o metodo erroUpload() na classe lancamento-cadastro.component.ts.
+        * Ver lancamento-cadastro.component.ts.
+        * 
+      --> 
+      <!-- 
+        * Aula 23.22. Utilizando o Componente ProgressSpinner
+        *
+        * Nesta aula, nos vamos utilizar um componente de progresso do PrimeNG para poder dar um feedback para o Usuario 
+        * enquanto o Upload do anexo do Lancamento estiver em progresso.
+        *
+        * 1. Entao, nos vamos em lancamento-cadastro.component.html e vamos definir, abaixo da tag <p-fileUpload>, a tag 
+        * <p-progressSpinner>.
+        *
+        * 2. Para configurar a tag <p-progressSpinner>, o que vamos fazer eh somente definir o seu tamanho, com property 
+        * binding: [style]="{ width: '25px', height: '25px' }"
+        *
+        * 3. Agora, nos vamos no Modulo de Lancamentos, lancamentos.module.ts e vamos importar esse Componente.
+        * Ver lancamento.module.ts.
+        *
+        * 5. Agora, o que precisamos fazer eh exibir esse Componente somente enquanto o Upload estiver em andamento.
+        * Para isso, nos vamos criar uma propriedade na Classe do Componente, lancamento-cadastro.component.ts, chamada
+        * de uploadEmAndamento.
+        * Ver lancamento-cadastro.component.ts.
+        *
+        * 9. Agora, basta a gente definir a diretiva ngIf em cada um dos componentes para a gente exibir ou um ou outro.
+        * Primeiramente, vamos definir a diretiva ngIf na tag <p-fileUpload>: So vai aparecer se nao estiver com o
+        * upload em andamento: *ngIf="!uploadEmAndamento". Ao contrario, o Componente Spinner vai aparecer se o upload estiver
+        * em andamento: *ngIf="uploadEmAndamento"
+        * 
+        * 10. Agora, ja podemos fazer um teste, vamos abrir o Browser: http://localhost:4200/lancamentos/1. Clicam no botao
+        * Anexar para anexar qualquer arquivo.
+        *
+        * 11. Nao funcionou. O componente ProgressSpinner fica em andamento para sempre. O problema esta em definirmos a 
+        * diretiva ngIf. Ao inves de definirmos ngIf, vamos definir o atributo hidden, com property binding. Vamos ter que 
+        * inverter a logica nos Componentes de FileUpload e de ProgressSpinner: esconder FileUpload quando for upload em andamento
+        * e esconder ProgressSpinner quando nao for upload em andamento.
+        *
+        * 12. Agora, testamos e funcionou.
+        * 
+        * 13. Agora, vamos testar um erro de Upload novamente, para ver se a mensagem de erro vai ser exibida. Para tanto,
+        * repetir Passo 4 da Aula 23.21. Tratando Erro de Upload.
+        *
+        * 14. Okay, funcionou, exibiu a mensagem de erro, conforme esperado. Nao esquecer de corrigir a URL do Componente
+        * FileUpload no metodo get urlUploadAnexo(), na classe lancamento-cadastro.component.ts.
+        *
+        * 15. Fizemos um ultimo teste para verificar se esta tudo okay. Clicar no botao Anexar, selecionar um arquivo pdf,
+        * anexar um arquivo qualquer, SuaContaClaro_Ago-18.pdf, o Componente Spinner apareceu e, depois, o nome do arquivo
+        * anexado. Ao clicar no link do arquivo, eh aberto uma nova Aba no Browser com o arquivo anexado.
+        * Fim da Aula 23.22. Utilizando o Componente ProgressSpinner.
+      -->
+      <!-- 
+        * Aula 23.24. Salvando e Removendo Anexo
+        *
+        * Nesta aula aqui, a gente vai salvar e remover um anexo no Lancamento. A primeira coisa que a gente vai fazer eh Salvar, 
+        * porque a gente ja pode fazer isso. Do jeito que a gente deixou, na ultima aula, a gente ja pode salvar um arquivo, 
+        * porque basta vincular o nome do anexo que a gente enviou com a propriedade anexo de Lancamento e, depois, Salvar, o 
+        * resto o Backend vai fazer.
+        *
+        * 1. Entao, a gente ja podia ter salvo algumas aulas atras. Nos vamos fazer esse teste agora, entao, de que esta Salvando o 
+        * anexo. No Browser, em http://localhost:4200/lancamentos/1, clicar no Botao Anexar, selecionar um arquivo qualquer: 
+        * SuaContaClaro_Ago-18.pdf. Vamos mandar Salvar, clicando no botao Salvar. 
+        *
+        * 2. Okay, a Aplicacao exibiu a mensagem: 'Lancamento alterado com sucesso!'. Atualizar a Pagina: F5 e verificamos que o anexo 
+        * continua na Pagina, ou seja, agora, esse anexo, SuaContaClaro_Ago-18.pdf, esta vinculado com esse Lancamento. Vamos 
+        * clicar no Link do anexo para verificarmos que o Link esta correto. Okay, verificamos que o link esta correto.
+        *
+        * 3. Entao, verificamos que ja podemos salvar, ja poderiamos, inclusive, ter salvo algumas aulas atras, mas fizemos esse teste 
+        * somente agora, porque somente agora faz sentido, pois, agora, vamos construir a funcionalidade de remover. Entao, para 
+        * remover, nos precisamos, antes, salvar um anexo.
+        *
+        * 4. Agora, nos vamos incluir um botao junto com o link do anexo. Vamos incluir um botao logo acima desse link para a gente 
+        * poder excluir o anexo, caso a gente queira alterar ou, simplesmente, excluir o anexo:
+        * <button pButton type="button" class="ui-button-danger" icon="fa-close" pTooltip="Remover anexo"
+        * Como queremos que ele seja um botao de exclusao, vamos definir o seu estilo como vermelho, entao vamos utilizar a classe
+        * ui-button-danger. Vamos definir, tambem, um icone de fechar para esse botao: 'fa-close'. Vamos definir, tambem, um
+        * tooltip: pTooltip como 'Remover anexo', vamos definir tooltipPosition como 'top' e vamos definir, com event binding,
+        * o evento do botao de click: (click)="", chamando o metodo removerAnexo().
+        * 
+        * 5. Agora, vamos construir o metodo removerAnexo() na classe do componente: lancamento-cadastro.component.ts.
+        * Ver lancamento-cadastro.component.ts.
+        * 
+        * 7. Agora, ja podemos fazer um teste, no Browser, em http://localhost:4200/lancamentos/1.
+        *
+        * 8. Verificamos que o botao de 'Remover anexo' estourou, esta ocupando toda a largura da tela. Vamos, primeiramente,
+        * testar a funcionalidade antes de corrigir o layout. Clicamos, entao, no botao de 'Remover anexo'. Verificamos que o 
+        * link do anexo foi removido da tela. Agora, vamos clicar no botao de Salvar. A Aplicacao retornou a mensagem:
+        * 'Lancamento alterado com sucesso!'. 
+        *
+        * 9. Vamos, agora, atualizar a tela com F5. O comportamento esperado eh que o link nao reapareca na tela e continue sendo
+        * exibido o botao de Anexar. Okay, o botao de Anexar continua sendo exibido na tela. 
+        *
+        * 10. Vamos anexar novamente um arquivo qualquer. Clicar no botao Anexar, selecionar um arquivo qualquer: Invoice_135559604.pdf,
+        * vamos Salver, clicar no botao Salvar. A Aplicacao exibe a mensagem: 'Lancameto alterado com sucesso!'. Agora, vamos atualizar
+        * novamente a Pagina e o Link do Anexo tem que continuar sendo exibido na tela. Okay, verificamos que continua sendo exibido na
+        * tela o Link do Anexo, assim como o botao de 'Remover anexo'.
+        *
+        * 11. Agora, vamos remover, novamente, o Link do Anexo, clicando no botao 'Remover anexo' e clicar no botao de Salvar. A Aplicacao
+        * exibe a mensagem: 'Lancamento alterado com sucesso!'. Atualizar a Pagina, com F5. Okay, o Lind do Anexo desapareceu da tela,
+        * assim como o botao de 'Remover anexo'.
+        *
+        * 12. Agora, vamos corrigir o layout do botao de 'Remover anexo', que esta ocupando toda a largura da tela. 
+        * A primeira coisa que iremos fazer eh remover a classe 'ui-fluid' da div em que esta o botao de 'Remover anexo'.
+        *
+        * 13. Agora, vamos testar novamente, anexando um arquivo e verificando o layout do botao de 'Remover anexo'. Okay,
+        * verificamos que o layout do botao ficou conforme o esperado.
+        * Fim da Aula 23.24. Salvando e Removendo Anexo.
+      -->         
+      <!--<div class="ui-g-12 ui-fluid">-->
+      <!-- <div class="ui-g-2 ui-g-offset-10 ui-fluid"> -->
+      <div class="ui-g-6 ui-g-offset-6 ui-md-2 ui-md-offset-10 ui-fluid"
+        *ngIf="!formulario.get('anexo').value">
+          <!--p-fileUpload name='anexo' mode='basic'
+              auto="true"
+              maxFileSize="100000000"
+              chooseLabel="Anexar"
+              accept="image/*,application/*"
+              [url]="urlUploadAnexo"
+              (onBeforeSend)="antesUploadAnexo(event)"></p-fileUpload-->
+          <!--p-fileUpload name='anexo' mode='basic'
+              auto="true"
+              maxFileSize="100000000"
+              chooseLabel="Anexar"
+              accept="image/*,application/*"
+              [url]="urlUploadAnexo"
+              (onBeforeSend)="antesUploadAnexo($event)"
+              (onUpload)="aoTerminarUploadAnexo($event)"
+              (onError)="erroUpload($event)"
+              *ngIf="!uploadEmAndamento"></p-fileUpload-->
+          <p-fileUpload name='anexo' mode='basic'
+              auto="true"
+              maxFileSize="100000000"
+              chooseLabel="Anexar"
+              accept="image/*,application/*"
+              [url]="urlUploadAnexo"
+              (onBeforeSend)="antesUploadAnexo($event)"
+              (onUpload)="aoTerminarUploadAnexo($event)"
+              (onError)="erroUpload($event)"
+              [hidden]="uploadEmAndamento"></p-fileUpload>              
+          <!--p-progressSpinner *ngIf="uploadEmAndamento"
+              [style]="{width: '25px', height: '25px'}"-->
+          <p-progressSpinner [hidden]="!uploadEmAndamento"
+              [style]="{width: '25px', height: '25px'}">
+          </p-progressSpinner>
+      </div>
+      <!--div class="ui-g-12 ui-fluid" dir='rtl'
+        *ngIf="formulario.get('anexo').value"-->
+      <div class="ui-g-12" dir='rtl'
+        *ngIf="formulario.get('anexo').value">        
+        <button pButton type="button" class="ui-button-danger" icon="fa-close"
+            pTooltip="Remover anexo" tooltipPosition="top"
+            (click)="removerAnexo()"></button>
+        <!--a target="_blank" pTooltip="Baixar anexo" tooltipPosition="top" 
+          [href]="formulario.get('urlAnexo').value">{{ formulario.get('anexo').value }}</a-->
+        <a target="_blank" pTooltip="Baixar anexo" tooltipPosition="top" 
+          [href]="formulario.get('urlAnexo').value">{{ nomeAnexo }}</a>
+      </div>
+      <div class="ui-g-12">
+
+      <!--button pButton type="submit" label="Salvar" [disabled]="f.invalid"></button-->
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo
+        * Nos botoes, vai haver uma pequena mudanca, porque f era a propriedade que estava declarada
+        * na tag do formulario e a gente nao a temos mais, entao definimos formulario, que eh a propriedade
+        * que esta dentro da Classe do Componente.
+      -->
+      <!--
+        * Aula 23.23. Desabilitando o Botao "Salvar" no Upload
+        *  
+        * Vamos para uma aula bem rapidinho, onde nos queremos desabilitar o botao de Salvar um Lancamento enquanto o Upload 
+        * estive em Progresso.
+        *
+        * Para fazer isso, a gente vai utilizar a propriedade que a gente ja criou na nossa classe do componente 
+        * lancamento-cadastro.component.ts, chamada uploadEmAndamento.
+        *
+        * 1. Vamos ate o botao de Salvar Lancamento e definimos uma nova condicao para o atributo disabled, definido com property 
+        * binding: || uploadEmAndamento. Se o upload estiver em andamento, queremos que o botao fique desabilitado.
+        *
+        * 2. Vamos, agora, testar. http://localhost:4200/lancamentos/1. O botao Salvar esta habilitado. O que nos queremos eh que,
+        * quando selecionarmos o arquivo, o botao Salvar tem que desabilitar.
+        *
+        * 3. Okay, funcionou: desabilitou o botao Salvar enquanto o Upload estava em andamento e habilitou novamente o botao
+        * Salvar assim que finalizou o Upload.
+        * Fim da Aula 23.23. Desabilitando o Botao "Salvar" no Upload.
+      -->
+      <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid || uploadEmAndamento">        
+      </button>
+
+        <!-- Definir um event click, que e um event-binding, chamando o 
+            metodo novo(), passando o form-control, que e o ngForm, como parametro.
+        <button pButton type="button" label="Novo" class="ui-button-info"
+            (click)="novo(f)"></button-->
+      <!-- 
+        * Aula 21.10 Configurando o HTML do formulario reativo
+        * O metodo novo() nao recebe mais o parametro f.
+      -->                        
+        <button pButton type="button" label="Novo" class="ui-button-info"
+            (click)="novo()"></button>            
+        <a routerLink="/lancamentos">Voltar para a pesquisa</a>
+      </div>
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,288 @@
+<div class="container">
+  <div class="ui-g">
+
+    <!-- Adicionar um formulario. Quando esse formulario for submetido, 
+        chamar o metodo pesquisar, que eh o metodo do nosso componente.
+    --> 
+    <form autocomplete="off" (ngSubmit)="pesquisar()">
+        <div class="ui-g-12">
+          <h1>Lançamentos</h1>
+        </div>
+
+        <!-- Na descricao, fazer o Binding. Para usar o ng-model, tem que definir o 
+          atributo name no input e babana-in-the-box [()]
+          [()] ou seja, fazer o binding desse atributo -->
+        <div class="ui-g-12 ui-fluid">
+          <label>Descrição</label>
+          <!--input name="descricao" [(ngModel)]="descricao"
+                pInputText type="text"-->
+          <input pInputText type="text"name="descricao" 
+              [(ngModel)]="filtro.descricao">
+        </div>
+
+        <div class="ui-g-12">
+          <label style="display: block">Vencimento</label>
+          <!--input pInputText type="text" style="width: 95px"-->
+          <!-- Adicionar propriedade inputStyle, recebendo um objeto, para definir a 
+            largura do input -->
+          <!-- ngModel: fazer um Two-Way DataBinding com a propriedade dataVencimentoInicio 
+                definida no Componente: lancamentos-pesquisa.component.ts-->
+          <p-calendar dateFormat="dd/mm/yy" [inputStyle]="{ width : '95px'}"
+                name="vencimentoInicio" 
+                [(ngModel)]="filtro.dataVencimentoDe"></p-calendar>
+
+          <label>até</label>
+          <!--input pInputText type="text" style="width: 95px"-->
+          <p-calendar dateFormat="dd/mm/yy" [inputStyle]="{ width : '95px'}"
+                name="vencimentoFim" 
+                [(ngModel)]="filtro.dataVencimentoAte"></p-calendar>          
+        </div>
+
+        <div class="ui-g-12">
+          <button pButton type="submit" label="Pesquisar"></button>
+        </div>
+    </form>
+  </div>
+
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <!-- Nao eh necessario mais componentizar o grid lancamentos. Nao usar
+      mais como componente. Comentar componente lancamentos-grid.component.html, porque
+      nao serah reutilizado. -->
+      <!--app-lancamentos-grid [lancamentos]="lancamentos"></app-lancamentos-grid-->
+      <!-- Alterar [rows]='5' que estah definido com 5 fixo para filtro.itensPorPagina 
+        Propriedade [lazy] define que esta tabela de dados eh lazy, ou seja,
+          vai buscar os dados de cada pagina por demanda. 
+        A medida que for navegando nas paginas, vai buscando os dados 
+      dessas paginas. Nao vai buscar tudo e fazer a paginacao no Cliente, como
+        eh o padrao.
+        Fazer um Event Binding no evento onLazyLoad() do componente DataTable.
+        Vai ser chamado toda vez que uma pagina for navegada, toda vez que for
+        necessario carregar dados novos da base de dados. 
+      -->
+      <!-- Passar uma propriedade em p-dataTable, fazendo um binding dela, que é o value. [value]
+          * O valor dela tem que ser uma propriedade do nosso componente, que é um array de objetos, o 
+          * que quer-se exibir nesse dataTable,
+          * qual que é a lista que quer-se exibir -->      
+      <!--
+        * Aula Alterando de DataTable para TurboTable
+
+        * O que a gente vai fazer agora eh utilizar o Componente TurboTable do PrimeNG 5 e 
+        * a gente vai fazer, na verdade, uma migracao da DataTable da Pagina de Lancamento para a 
+        * TurboTable.
+    
+        * Entao, nos vamos abrir lancamentos-pesquisa.component.html e a gente vai trocar <p-dataTable> 
+        * por <p-turboTable>.
+
+        * Nos vamos ver que ate vai ficar mais simples a nossa tabela. A primeira coisa que vamos fazer
+        * eh trocar o Componente. Na verdade, a primeira coisa eh importar esse Componente no Modulo de
+        * Lancamento.
+
+        * Alterar:
+        * import { DataTableModule } from 'primeng/datatable';
+        * para:
+        * import { TableModule } from 'primeng/table';
+        * Na Secao imports, alterar:
+        * DataTableModule,
+        * para: 
+        * TableModule,
+        *
+        * Voltando para o Template HTML, o Componente chama-se TurboTable, esta especificado assim
+        * no Site, mas a tag dele eh <p-table> e o nome do Module eh TableModule.
+        * 
+        * As propriedade sao praticamente iguais. Nos apenas nao precisamos mais da propriedade
+        * emptyMessage, porque ela vai ser definida de uma outra maneira.
+        * Embaixo de <p-table>, vamos definir <ng-template>, ao inves de <p-column>.
+        * Vai criando templates e colocando as colunas dentro.
+      -->
+      <!--p-dataTable [value]="lancamentos" [responsive]="true" 
+        emptyMessage="Nenhum lançamento encontrado."      
+        [paginator]="true" [rows]="filtro.itensPorPagina"
+        [lazy]="true"
+        [totalRecords]="totalRegistros"
+        (onLazyLoad)="aoMudarPagina($event)"
+        #tabela-->
+      <!-- TURBOTABLE -->
+      <p-table [value]="lancamentos" [responsive]="true" 
+        [paginator]="true" [rows]="filtro.itensPorPagina"
+        [lazy]="true"
+        [totalRecords]="totalRegistros"
+        (onLazyLoad)="aoMudarPagina($event)"
+        #tabela>
+        <!-- Vamos configurar o Header. -->
+        <ng-template pTemplate="header">
+        <!-- Aqui dentro, vamos definir tag HTML normal. -->
+          <tr>
+            <th>Pessoa</th>
+            <th>Descrição</th>
+            <th class="col-data-header">Vencimento</th>
+            <th class="col-data-header">Pagamento</th>
+            <!-- 
+              * Vamos criar uma Classe especifica para o Cabecalho de Valor para
+              * diminuir o tamanho da largura da coluna.
+              * Vamos fazer isso com as Datas e com o Botao de Acao tambem.
+             -->
+            <th class="col-valor-header">Valor</th>
+            <th class="col-acoes-header"></th>
+          </tr>          
+        </ng-template> 
+        <!-- Agora vamos definir o Corpo. -->
+        <ng-template pTemplate="body" let-lancamento>
+          <tr>
+            <td>{{ lancamento.pessoa }}</td>
+            <td>{{ lancamento.descricao }}</td>
+            <td class="col-data">{{ lancamento.dataVencimento | date:'dd/MM/yyyy' }}</td>
+            <td class="col-data">{{ lancamento.dataPagamento | date:'dd/MM/yyyy' }}</td>
+            <td class="col-valor" [style.color]="lancamento.tipo === 'DESPESA' ? 'red' : 'blue'">
+              {{ lancamento.valor | number:'1.2-2' }}
+            </td>
+            <!-- 
+              * Outro problema que nos vamos corrigir agora eh a questao dos botoes que
+              * podem ficar desalinhados.
+              * Por que os botoes podem ficar desalinhados?
+              * Quando se define os dois botoes com a tag <a>, ou os dois botoes como
+              * a tag <button>, funciona o alinhamento. O desalinhamento pode vir a 
+              * acontecer quando se define a tag <a> para um botao e a tag <button> para o outro botao.
+              * 
+              * Nos podemos resolver o desalinhamento com CSS, definindo algumas classes existentes
+              * no PrimeNG, mas vamos simplificar, utilizando a mesma tag.
+              * 
+              * Entao, ao inves de utilizar a tag <a>, nos vamos substituir pela tag <button>
+              * 
+             -->
+             <!--
+                * Aula 25.05. Corrigindo Icones
+
+                * Vamos la entao com a questao dos icones. Vamos corrigir os nossos icones nas Paginas de Pessoas e tambem em 
+                * Lancamentos todos os icones estao desajustados.
+
+                * Vamos comecar pela tela de Lancamentos, lancamentos-pesquisa.component.html.
+
+                * 1. Vamos ate os botoes. Ao inves de definir apenas, no atributo icon, fa-pencil, a gente vai precisar definir mais um
+                * fa, fa fa-pencil. Eh dessa forma que a gente define quando nao estamos trabalhando com os componentes do PrimeNG, essa
+                * eh a forma mais comum de a gente usar quando esta criando paginas simplesmente HTML, sem utilizar framwork nenhum, 
+                * somente com HTML e CSS e a gente quer utilizar um icone do font-awesome, eh dessa forma, talvez por isso que os criadores
+                * do font-awesome resolveram utilizar da forma mais tradicional. Entao, a gente vai precisar definir dessa forma, 
+                * fa fa-pencil.
+                *
+                * 2. Agora, ja podemos testar, http://localhost:4200/lancamentos. Verificamos que corrigiu, mas os botoes estao um 
+                * pouco grudados e vamos corrigir isso tambem.
+                * 
+                * 3. Agora, na Pagina de Pessoas, http://localhost:4200/pessoas. Vamos corrigir, agora, a Pagina de Pessoas.
+                * Ver pessoas-pesquisa.component.html.           
+                *
+                * 16. Agora, vamos voltar alterar o botao para link. Anteriormente, foi alterado de link 
+                * para botao por causa da questao do espacamento. Agora, vamos corrigir para ficar como foi definido originalmente.
+                *
+                * 17. Fazer a mesma coisa que o Passo 16 em pessoas-pesquisa.component.html. Ver pessoas-pesquisa.component.html.
+             -->
+            <td class="col-acoes">
+                <!-- a pButton icon="fa-pencil" pTooltip="Editar" tooltipPosition="top"
+                  [routerLink]="['/lancamentos', lancamento.codigo]"
+                  (click)="buscarPorCodigo(lancamento.codigo)"></a-->
+                <!--button pButton icon="fa-pencil" pTooltip="Editar" tooltipPosition="top"
+                  [routerLink]="['/lancamentos', lancamento.codigo]"
+                  (click)="buscarPorCodigo(lancamento.codigo)"></button-->
+                <!--button pButton icon="fa fa-pencil" pTooltip="Editar" tooltipPosition="top"
+                  [routerLink]="['/lancamentos', lancamento.codigo]"
+                  (click)="buscarPorCodigo(lancamento.codigo)"></button-->  
+                <a pButton icon="fa fa-pencil" pTooltip="Editar" tooltipPosition="top"
+                  [routerLink]="['/lancamentos', lancamento.codigo]"
+                  (click)="buscarPorCodigo(lancamento.codigo)"></a>
+                <!-- button pButton icon="fa-trash" 
+                  pTooltip="Excluir" tooltipPosition="top"
+                  (click)="confirmarExclusao(lancamento)"
+                  [disabled]="!auth.temPermissao('ROLE_REMOVER_LANCAMENTO')"></button-->
+                <button pButton icon="fa fa-trash" 
+                  pTooltip="Excluir" tooltipPosition="top"
+                  (click)="confirmarExclusao(lancamento)"
+                  [disabled]="!auth.temPermissao('ROLE_REMOVER_LANCAMENTO')"></button>                  
+            </td>
+          </tr>
+        </ng-template>
+        <!-- Definir Mensagem para 'Nenhum lançamento encontrado.' -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6">
+                Nenhum lançamento encontrado.
+            </td>
+          </tr>
+        </ng-template>
+        <!-- TURBOTABLE -->
+
+        <!-- DATATABLE -->
+        <!--
+        <p-column field="pessoa" header="Pessoa"></p-column>
+        <p-column field="descricao" header="Descrição"></p-column>
+        <p-column header="Vencimento" styleClass="col-data">
+          <!-- Define dentro do ng-template uma referência/variável: 
+            let- + nomeQualquer + = + rowData -->
+          <!-- Nome da variável para lancamento: lanc -->
+          <!-- Criar uma referência. Essa referência é uma variável chamada lanc, 
+            referenciando os dados da linha, de cada linha. -->
+          <!-- Cada linha dentro do dataTable será referenciada pela variável rowData -->
+        <!--
+            <ng-template let-lanc="rowData" pTemplate="body">
+                <span>{{ lanc.dataVencimento | date:'dd/MM/yyyy' }}</span>
+            </ng-template>
+        </p-column>
+        <p-column header="Pagamento" styleClass="col-data">
+            <ng-template let-lanc="rowData" pTemplate="body">
+                <span>{{ lanc.dataPagamento | date:'dd/MM/yyyy' }}</span>
+            </ng-template>
+        </p-column>
+        <p-column field="valor" header="Valor" styleClass="col-valor">
+          <ng-template let-lanc="rowData" pTemplate="body">
+            <span [style.color]="lanc.tipo === 'DESPESA' ? 'red' : 'blue'">{{ lanc.valor | number:'1.2-2' }}</span>
+          </ng-template>
+        </p-column>
+        <p-column styleClass="col-acoes">
+            <ng-template let-lanc="rowData" pTemplate="body">
+              <!-- Passar um array para routerLink. Para passar um array, tem que fazer
+              um property-binding, colocando os colchetes ao redor de routerLink.
+              Nesse array, no primeiro parametro, passar /lancamentos.
+              No segundo parametro, passar o codigo. 
+              O que quero dizer com isso? Quando passo, usando property-binding, um array, eu
+              estou passando alguns fragmentos do meu Path.
+              Estah utilizando um array porque eh um link dinamico, a gente quer o codigo
+              do lancamento da linha atual. -->
+        <!--              
+              <a pButton icon="fa-pencil" pTooltip="Editar" tooltipPosition="top"
+                  [routerLink]="['/lancamentos', lanc.codigo]"
+                  (click)="buscarPorCodigo(lanc.codigo)"></a>
+
+              <!-- Adicionar ao Botao de Excluir um Event-Binding click(). Quando clicar, vamos
+                  chamar o metodo confirmarExclusao(), passando o objeto que representa lancamento: lanc, 
+                  definido em let-lanc, relativo a linha que eu cliquei do Botao Excluir -->
+              <!-- 
+              * Mas esta aula tem um outro objetivo tambem, que eh a gente proteger esse 
+              * componente, esse botao de Excluir. Ja que a Maria nao pode excluir, nao 
+              * precisa a gente dar o trabalho para ela clicar e confirmar e depois se frustrar,
+              * vendo que ela nao tem permissao. Podemos, simplesmente esconder esse botao ou, 
+              * ainda, desabilita-lo, depende de cada caso. Neste caso, vamos apenas desabilitar 
+              * o botao. No Template de LancamentosPesquisa, no botao de Excluir, vamos colocar, 
+              * fazer um property-binding na propriedade disabled e temos que verificar aqui se
+              * o Usuario tem ou nao permissao. Para isso, a gente vai ter que usar o AuthService.
+              * No Componente LancamentosPesquisaComponent, nao estamos usando-o, entao vamos
+              * injeta-lo no Construtor.
+            -->
+        <!--
+              <button pButton icon="fa-trash" 
+                  pTooltip="Excluir" tooltipPosition="top"
+                  (click)="confirmarExclusao(lanc)"
+                  [disabled]="!auth.temPermissao('ROLE_REMOVER_LANCAMENTO')"></button>
+
+            </ng-template>
+        </p-column>
+        <!-- DATATABLE -->
+      <!-- /p-dataTable-->
+      </p-table>
+    </div>
+
+    <div class="ui-g-12">
+      <a pButton routerLink="/lancamentos/novo" label="Novo Lançamento"></a>
+    </div>
+
+  </div>
+
+</div>

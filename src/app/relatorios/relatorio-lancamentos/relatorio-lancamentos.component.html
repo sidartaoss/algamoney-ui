@@ -1,0 +1,123 @@
+<!-- 
+* Aula 23.08. Configurando Formulário do Relatório
+* 
+* Nesta aula, a gente vai construir o formulario da nossa tela de Relatorio 
+* Lancamento Por Pessoa para que o Usuario Final escolha um Periodo e possa fazer a 
+* Requisicao para buscar o Relatorio em PDF.
+*
+* Vamos abrir relatorio-lancamentos.component.html.
+*
+* Vamos criar, agora, o HTML que realmente vai ficar definido aqui, o HTML final desta 
+* Pagina.
+*
+* 1. Inicialmente, nos vamos colar aqui um HTML, que eh a base de todas as nossas 
+* paginas:
+*
+<div class="container">
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<h1>Relatorio de Lancamentos Por Pessoa</h1>
+		</div>
+	</div>
+</div>
+
+* 2. Depois disso, vamos comecar com a tag <form>. Vamos de definir uma variavel
+* #f com o valor ngForm, que a gente vai precisar para poder fazer aquela questao
+* de desabilitar ou nao o botao, porque a gente vai ter os campos de entrada dessa
+* pagina, desse formulario que serao obrigatorios. Entao, a gente vai fazer aquela
+* questao la de desabilitar o botao caso eles ainda nao estejam preenchidos, ou
+* seja, caso o formulario ainda esteja invalido.
+*
+* 3. Lembrando que, para utilizar o Modulo de Formulario, a gente precisa importa-lo
+* em relatorios.module.ts, na Secao Imports.
+* Ver relatorios.module.ts.
+*
+* 5. Dentro da tag <form>, vamos comecar definindo o <label>, o qual vai se chamar
+* Vencimento. Vamos chama-lo Vencimento porque, aqui, estamos escolhendo um 
+* periodo de datas de vencimento.
+*
+* 6. Agora, nos vamos utilizar o Componente Calendar do PrimeNG. Entao, vamos voltar
+* em relatorios.module.ts para importar o Modulo Calendar do PrimeNG na Secao
+* de Imports.
+* Ver relatorios.module.ts.
+*
+* 8. Vamos definir o Calendar do PrimeNG com <p-calendar>. Nos temos, como primeiro 
+* atributo que a gente precisa setar, o atributo dateFormat com o valor dd/mm/yy.
+* Vamos definir esse campo como required e vamos definir o atributo ngModel.
+* O valor do ngModel vai ser periodoInicio.
+*
+* 9. Vamos adicionar um outro label apos a tag <p-calendar>, com ate. Ja que 
+* eh um periodo, vai ficar Data Inicial ate Data Final, que eh o que nos vamos
+* definir. 
+*
+* 10. Inclusive, nos vamos copiar <p-calendar>, porque vai ser bastante
+* parecido com Data Inicial para a Data Final.
+*
+* 11. Isso que nos definimos dentro do <form> ate agora, nos vamos colocar
+* dentro de uma <div> com a classe ui-g-12 com 12 posicoes, que vai ocupar as 12
+* posicoes.
+*
+* 12. Vamos definir uma outra <div> abaixo com a mesma classe: ui-g-12. Aqui
+* nos vamos definir o botao.
+*
+* 13. Dentro dessa <div>, vamos definir o <button>, utilizando o pButton do
+* PrimeNG. O type vai ser submit. Vamos definir o atributo label como Gerar,
+* de Gerar Relatorio. Vamos trabalhar a propriedade disabled, fazendo um
+* property binding. Para isso, nos vamos utilizar a variavel #f, que esta na
+* tag do Formulario.
+* 
+* 14. Com isso definido, nos ja podemos fazer um teste. So precisamos criar
+* as propriedades periodoInicio, periodoFim na Classe do Componente:
+* relatorio-lancamentos.component.ts.
+* Ver relatorio-lancamentos.component.ts.
+*
+* 17. Definir o evento ngSubmit com event binding para o metodo
+* gerar() na tag <form>.
+*
+* 18. Agora, ja podemos fazer um teste.
+*
+* 19. Corrigir o erro: Error: If ngModel is used within a form tag, 
+* either the name attribute must be set or the form. Precisa do atributo 
+* name definido onde for definido ngModel. Definir com o mesmo nome
+* definido em ngModel.
+*
+* 20. O tamanho dos inputs de datas esta o dobro do que nos precisamos. 
+* Entao, nos vamos
+* utilizar o style para diminuir. Olhando, assim, para a tela como um todo, esta
+* legal, mas, quando a gente coloca a data, ela ocupa somente a metade do
+* espaco. Entao, definir com property binding o inputStyle.
+* No valor, vamos definir, como JSON, ja que foi feito 
+* property binding: { 'width': '95px'}.
+*
+* 21. Para testar, selecionar Data Inicial e Data Final. Devera habilitar o 
+* botao Gerar. Clicar no botao Gerar e devera aparecer os valores das datas no 
+* Console do Browser, conforme selecionado nos inputs de datas.
+* Nas proximas aulas, a gente vai fazer a questao de buscar os bytes do PDF
+* la no nosso Backend e exibi-lo para o Usuario Final.
+* Fim da Aula 23.08. Configurando Formulário do Relatório.
+-->
+<div class="container">
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <h1>Relatorio de Lancamentos Por Pessoa</h1>
+    </div>
+    
+    <form #f="ngForm" (ngSubmit)="gerar()">
+      <div class="ui-g-12">
+        <label>Vencimento </label>
+        <p-calendar dateFormat="dd/mm/yy" required 
+            [inputStyle]="{ 'width': '95px'}"
+            [(ngModel)]="periodoInicio" name="periodoInicio"></p-calendar>
+        <label> ate </label>
+        <p-calendar dateFormat="dd/mm/yy" required 
+            [inputStyle]="{ 'width': '95px'}"
+            [(ngModel)]="periodoFim" name="periodoFim"></p-calendar>
+      </div>
+
+      <div class="ui-g-12">
+        <button pButton type="submit" label="Gerar"
+            [disabled]="f.invalid"></button>
+      </div>
+    </form>
+  </div>
+</div>

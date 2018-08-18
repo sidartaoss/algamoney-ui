@@ -1,0 +1,721 @@
+<!-- 
+  * Aula 24.04. Preenchendo o Dropdown de Estados
+
+  * Nesta aula aqui, a gente vai comecar a alterar a tela mesmo. Nos vamos criar o Dropdown de Estado, dentro da nossa tela de 
+  * cadastro de Pessoas nos vamos criar o Dropdown de Estados e vamos carregar os Estados dentro desse Dropdown. 
+  *
+  * Vamos abrir, entao, o Componente Cadastro de Pessoas, pessoa-cadastro.component.html e vamos comecar a alterar.
+  *
+  * 1. Vamos, inicialmente, procurar pelo campo Estado:
+      <div class="ui-g-12 ui-md-6 ui-fluid">
+        <label>Estado</label>
+        <input pInputText type="text" name="estado"
+          [(ngModel)]="pessoa.endereco.estado" 
+          #estado="ngModel" required>
+
+          <app-message [control]="estado" error="required"
+          text="Informe o estado"></app-message>
+      </div>
+  *
+  * 
+  * 2. Vamos remover o trecho:
+        <input pInputText type="text" name="estado"
+          [(ngModel)]="pessoa.endereco.estado" 
+          #estado="ngModel" required>
+
+          <app-message [control]="estado" error="required"
+          text="Informe o estado"></app-message>
+  *
+  * 3. E vamos substituir pela tag: <p-dropdown>, com o atributo placeholder como 'Selecione'. Tambem vamos definir, com property
+  * binding, o autoWidth como true. Vamos definir, tambem, por property binding, o atributo filter como true para o Usuario 
+  * poder filtrar dentro daquilo que ja esta dentro do nosso dropdown e, por ultimo, vamos definir, por property binding, o atributo
+  * options. E eh nessa propriedade que a gente vai definir o atributo estados da Classe do Componente. 
+  * <p-dropdown placeholder="Selecione..." [autoWidth]="true" [filter]="true" [options]="estados"
+  *
+  * 4. Mas, antes de carregar os Estados para a propriedade estados da Classe do Componente, nos precisamos, no Modulo de Pessoa, 
+  * pessoas.module.ts, e importar Componente Dropdown do PrimeNG.
+  * Ver pessoas.module.ts.
+  * 
+  * 6. Definir na Classe do Componente pessoa-cadastro.component.ts o metodo chamado carregarEstados().
+  * Ver pessoa-cadastro.component.ts.
+  * 
+  * 14. Agora, vamos trocar de lugar os campos de Cidade e de Estado, para melhorar o layout da tela, pois sao combos dependentes.
+  * A Cidade vai passar para depois do Estado.
+  *
+  * 15. Verificamos que o label de Estado esta ao lado do Combo, quando o comportamento desejado eh que fique acima do Combo de
+  * Estado. Isso eh porque o atributo autoWidth estava definido como 'true', deve-se definir como 'false'.
+  *
+  * 16. Agora, sim, o layout esta ajustado. O objetivo de preenchermos o dropdown com os registros dos Estados foi cumprido.
+  * Fim da Aula 24.04. Preenchendo o Dropdown de Estados.
+  * 
+-->
+<!-- 
+  * Aula 24.05. Carregando o Dropdown de Cidades
+  * 
+  * Nesta aula aqui, o que a gente vai fazer eh carregar, agora, o dropdown de Cidades. 
+  *
+  * 1. Entao, nos vamos descer ate o dropdown de Cidades e vamos remover o input de Cidades:
+          <input pInputText type="text" name="cidade"
+            [(ngModel)]="pessoa.endereco.cidade" #cidade="ngModel" required>
+  
+            <app-message [control]="cidade" error="required"
+            text="Informe a cidade"></app-message>
+	*		
+  * e vamos copiar o dropdown de Estado e vamos colar em Cidades.
+  *
+  * 2. No atributo [options] do dropdown de Cidades, definir o valor como cidades. Nos vamos ter que criar a propriedade
+  * cidades na Classe do Componente, pessoa-cadastro.component.ts. E, para poder disparar o carregamento das Cidades, a gente vai precisar de duas coisas
+  * no dropdown de Estados.
+  * 
+  * 3. A primeira coisa que a gente vai precisar definir eh o valor do Estado la na nossa Classe do Componente, 
+  * pessoa-cadastro.component.ts. Entao, vamos definir, com Two Way Binding, ngModel com o valor de estadoSelecionado, no dropdown
+  * de Estados. 
+  *
+  * 4. Vamos definir o atributo 'name' conforme definido para ngModel e vamos definir um evento, tambem, com Event Binding, no 
+  * dropdown de Estados, (onChange), porque, cada vez que o Estado mudar, nos queremos que seja disparado o evento para que nos
+  * carreguemos as Cidades. O metodo a ser invocado sera definido na Classe do Componente eh o carregarCidades().
+  * 
+  * 5. Vamos definir o metodo carregarCidades() agora. Vamos criar a propriedade estadoSelecionado e vamos criar o metodo 
+  * carregarCidades().
+  * Ver em pessoa-cadastro.component.ts.
+  *  
+-->
+<!--
+  * Aula 24.06. Validando Cidade e Estado e salvando Pessoa
+  *
+  * Nesta aula aqui, a gente vai validar os dois combos de Cidade e Estado e, depois, a gente vai fazer um teste de insercao 
+  * de uma Pessoa com essa nova estrutura de Cidades e Estados.
+  *
+  * Vamos, entao, ate o dropdown de Cidades e vamos definir mais algumas coisas nesse dropdown.
+  * 
+  * 1. A primeira coisa que iremos definir eh o ngModel com Two Way Data Binding com o valor de pessoa.endereco.cidade.codigo. 
+  * O atributo name sera definido como cidade. Vamos, tambem, criar uma variavel, a qual chamaremos de #cidade, atribuindo o
+  * valor com ngModel para podermos utilizar na tag de mensagem depois. Vamos definir, tambem, como required.
+  *
+  * 2. Agora, vamos definir a tag de mensagem para o dropdown de Cidade. Vamos copiar a tag de mensagem do campo de CEP e vamos
+  * colar logo apos o dropdown de Cidade:
+          <app-message [control]="cidade" error="required"
+          text="Informe a cidade"></app-message>
+
+  * 3. Apesar de nao termos vinculo direto entre um Estado e uma Pessoa, porque nos temos la na Classe Endereco.java somente o 
+  * atributo cidade e a entidade Cidade tem o atributo estado.
+  * Mas, mesmo nao tendo esse vinculo direto com a Pessoa, a gente vai ter que validar o Estado, ja que a Cidade eh obrigatoria,
+  * a gente vai validar tambem o Estado. 
+  *
+  * 4. Para fazer isso, nos vamos definir, no dropdown de Estado, uma variavel chamada de #estado, com ngModel, com o atributo 
+  * required. Vamos, tambem, colar a tag de mensagem apos o dropdown de Estado para a mensagem de erro,
+          <app-message [control]="estado" error="required"
+            text="Informe o estado"></app-message>
+  * 
+  * 5. Agora, nos ja podemos fazer um teste, http://localhost:4200/pessoas/1, vamos selecionar o Estado, Minas Gerais, vamos deixar
+  * selecionado a cidade de Belo Horizonte no Combo de Cidades. Agora, vamos mandar salvar essa Pessoa, clicar no botao Salvar.
+  * A aplicacao retornou a mensagem 'Pessoa alterada com sucesso!'. E, agora, apesar de ter salvo, quando apertarmos F5 no 
+  * Browser, a Cidade vai ficar zerada. Entao, a gente tem que cuidar disso agora. Entao, quando carregar essa Pessoa para 
+  * edicao, a Cidade tem que estar carregada tambem. Isso a gente vai cuidar no metodo onde carrega a Pessoa, 
+  * em pessoa-cadastro.component.ts, no metodo carregarPessoa().
+  * Ver pessoa-cadastro.component.ts.
+  *
+  * 12. Nos queremos bloquear o dropdown de Cidade enquanto o dropdown de Estado nao estiver selecionado. Para isso, nos vamos
+  * utilizar o atributo disabled, por Property Binding, do dropdown de Cidade e vamos validar isso com a propriedade do 
+  * estadoSelecionado, se nao tiver valor em estadoSelecionado, vai ficar desabilitado.
+  * [disabled]="!estadoSelecionado"
+  * 
+  * 13. Agora, vamos testar novamente, http://localhost:4200/pessoas/nova, e, agora, o dropdown de Cidade esta desabilitado.
+  * Ao selecionar um Estado, Minas Gerais, o dropdown Cidade se habilitou para podermos selecionar a Cidade.
+  *
+  * 14. Entao, agora, nos temos o dropdown de Estado sendo carregado, o dropdown de Cidade que eh dependente do dropdown de
+  * Estado e o nosso dropdown de Cidade nao se habilita enquanto a gente nao seleciona um Estado.
+  *
+  * 15. Vamos, so, testar Salvar um novo Registro. Entao, nos vamos salvar uma Nova Pessoa, Nome: Teste, Logradour: Rua Teste,
+  * Numero: 100, Complemento: em branco, Bairro: Teste, CEP: 00.000-000, Estado: Minas Gerais, Cidade: Belo Horizonte, sem
+  * Contato e vamos mandar Salvar, clicar no botao Salvar.
+  *
+  * 16. A Aplicacao retornou a mensagem de sucesso: 'Pessoa adicionada com sucesso!', vamos apertar F5 para atualizar a Pagina,
+  * vamos verificar se os Combos de Estado e Cidade estao okay. Estao okay, tanto a Edicao, a qual ja tinhamos testado
+  * como tambem para insercao de uma Nova Pessoa, o qual acabamos de testar.
+  * 
+  * 17. Fim da Aula 24.06. Validando Cidade e Estado e salvando Pessoa.
+-->
+<div class="container">
+  <form #f="ngForm" autocomplete="off" (ngSubmit)="salvar(f)">
+
+    <div class="ui-g">
+      <div class="ui-g-12">
+        <h1>Nova Pessoa</h1>
+      </div>
+
+      <div class="ui-g-12 ui-fluid">
+        <label>Nome</label>
+        <input pInputText type="text" name="nome"
+          [(ngModel)]="pessoa.nome" #nome="ngModel" required minlength="5">
+
+        <app-message [control]="nome" error="required"
+          text="Informe o nome"></app-message>
+        <app-message [control]="nome" error="minlength"
+          text="Mínimo de {{ nome.errors?.minlength?.requiredLength }} caracteres"></app-message>
+      </div>
+
+      <div class="ui-g-12 ui-md-9 ui-fluid">
+        <label>Logradouro</label>
+        <input pInputText type="text" name="logradouro"
+          [(ngModel)]="pessoa.endereco.logradouro" #logradouro="ngModel" required>
+
+        <app-message [control]="logradouro" error="required"
+          text="Informe o logradouro"></app-message>
+      </div>
+
+      <div class="ui-g-12 ui-md-3 ui-fluid">
+        <label>Número</label>
+        <input pInputText type="text" name="numero"
+          [(ngModel)]="pessoa.endereco.numero" #numero="ngModel" required>
+
+        <app-message [control]="numero" error="required"
+          text="Informe o número"></app-message>
+      </div>
+
+      <div class="ui-g-12 ui-md-4 ui-fluid">
+        <label>Complemento</label>
+        <input pInputText type="text" name="complemento" 
+            [(ngModel)]="pessoa.endereco.complemento">
+      </div>
+
+      <div class="ui-g-12 ui-md-4 ui-fluid">
+        <label>Bairro</label>
+        <input pInputText type="text" name="bairro"
+          [(ngModel)]="pessoa.endereco.bairro" #bairro="ngModel" required>
+
+        <app-message [control]="bairro" error="required"
+          text="Informe o bairro"></app-message>
+      </div>
+
+      <div class="ui-g-12 ui-md-4 ui-fluid">
+        <label>CEP</label>
+        <p-inputMask name="cep" mask="99.999-999"
+          [(ngModel)]="pessoa.endereco.cep" #cep="ngModel" required></p-inputMask>
+
+        <app-message [control]="cep" error="required"
+          text="Informe o CEP"></app-message>
+      </div>
+
+      <div class="ui-g-12 ui-md-6 ui-fluid">
+        <label>Estado</label>
+        <!--input pInputText type="text" name="estado"
+          [(ngModel)]="pessoa.endereco.estado" 
+          #estado="ngModel" required>
+
+          <app-message [control]="estado" error="required"
+          text="Informe o estado"></app-message-->
+        <!--p-dropdown placeholder="Selecione..." [autoWidth]="true"
+            [filter]="true" [options]="estados"></p-dropdown-->
+        <p-dropdown placeholder="Selecione..." [autoWidth]="false"
+            [filter]="true" [options]="estados"
+            [(ngModel)]="estadoSelecionado"
+            name="estadoSelecionado"
+            (onChange)="carregarCidades()"
+            #estado="ngModel"
+            required></p-dropdown>
+        <app-message [control]="estado" error="required"
+            text="Informe o estado"></app-message>            
+      </div>
+
+      <div class="ui-g-12 ui-md-6 ui-fluid">
+          <label>Cidade</label>
+          <!--input pInputText type="text" name="cidade"
+            [(ngModel)]="pessoa.endereco.cidade" #cidade="ngModel" required>
+  
+            <app-message [control]="cidade" error="required"
+            text="Informe a cidade"></app-message-->
+        <p-dropdown placeholder="Selecione..." [autoWidth]="false"
+            [filter]="true" [options]="cidades"
+            [(ngModel)]="pessoa.endereco.cidade.codigo"
+            name="cidade"
+            #cidade="ngModel"
+            required
+            [disabled]="!estadoSelecionado"></p-dropdown>            
+        <app-message [control]="cidade" error="required"
+            text="Informe a cidade"></app-message>                        
+      </div>
+
+    <!--
+      * Aula 23.11. Listando Contatos na Tela Mestre-Detalhe
+      *
+      * A partir desta aula aqui, a gente vai comecar a construcao de uma tela mestre-detalhe. Na verdade, a gente ja comecou, 
+      * porque a tela eh a Tela de Pessoa, entao a gente vai ajustar esse tela de pessoa para que ela vire uma tela mestre-detalhe, 
+      * mais especificamente a tela de Cadastro de Pessoa. Agora, em Pessoa, a gente tem uma lista de contatos. E o que vai acontecer 
+      * eh que la na tela de Cadastro de Pessoa, a gente vai ter uma Grade, uma Tabela para listar os Contatos dessa Pessoa e a gente 
+      * vai poder tambem inserir novos e editar os existentes.
+      * 
+      * Para fazer isso, para comecar, o que a gente vai fazer nesta aula aqui eh ajustar o layout da Tela de Cadastro de Contato 
+      * para ja poder colocar a Grid dentro de um painel e exibir ja os contatos, caso a pessoa ja tenha algum contato.
+      * 
+      * Entao, vamos abrir o VS Code. Vamos abrir a Tela de pessoa-cadastro.component.html. 
+      *
+      * 1. Aqui mais para o final, nos vamos incluir mais uma div, definindo a classe como ui-g-12, com 12 posicoes e, dentro da div, 
+      * vamos utilizar um Panel.
+      *
+      * 2. Antes de utilizarmos esse Panel, vamos ver se ele esta no Modulo de Pessoa (pessoas.module.ts). Nao esta, entao vamos
+      * definir. Ver pessoas.module.ts.
+      *
+      * 4. Vamos definir, entao, <p-panel>. Utilizar o header com o valor Contatos como titulo.
+      *
+      * 5. Dentro de <p-panel>, vamos comecar a definir a Grid de Contatos. Para definir essa Grid, primeiramente, vamos incluir
+      * uma div para ajustarmos esse layout. Para essa div, vamos definir a Classe ui-g. Abaixo dessa div, vamos definir outra div
+      * que vai ser definida com a Classe ui-g com 12 posicoes: ui-g-12. Dentro dessa ultima div, vamos definir a Tabela.
+      *
+      * 6. Primeiramente, verificar se ja tem definido o Modulo de Table na Secao de Imports de PessoasModule. Como ja esta definido,
+      * eh so usarmos o componente do PrimeNG.
+      *
+      * 7. Definimos <p-table> e a propriedade que iremos utilizar eh: value, fazendo um property binding. O valor vai ser 
+      * pessoa.contatos, que eh a lista de contatos que, agora, a gente tem em Pessoa. Inclusive a gente tem que alterar la no modelo
+      * para cobrir essa questao, esse novo atributo contatos. Ver Model.ts.
+      *
+      * 11. Outra propriedade que nos vamos utilizar eh responsive, fazendo um property binding. Ou seja, vai ser uma Tabela Responsiva.
+      *
+      * 12. Agora, a gente vai definir aqui os templates. Definir pTemplate com header.
+      *
+      * 13. Em seguida, definir a tag <tr> e, dentro da <tr>, as tags <th>, porque aqui eh o Cabecalho. No primeiro, a gente vai ter o
+      * Nome. Depois, E-mail, Telefone e, por ultimo, a gente vai ter a Coluna Acoes, onde vamos definir a Classe col-acoes-header.
+      *
+      * 14. E, agora, nos vamos definir o Corpo. Vamos comecar com <ng-template>, com pTemplate definido com body. Vamos, tambe, aqui,
+      * definir a variavel contato com let, que eh a variavel referente a cada contato que vai ser iterado para a gente conseguir
+      * utilizar essas informacoes na hora de exibir cada coluna.
+      * 
+      * 15. Definimos, entao, em seguida, <tr>. Dentro de cada <tr>, nos temos <td>. O primeiro vai ser nome: {{ contato.nome }}.
+      * Depois, a gente tem email: {{ contato.email }}. Por ultimo, a gente tem telefone: {{ contato.telefone }}. 
+      
+      * 16. Na verdade, a gente tem mais uma coluna, que eh a coluna de Acoes. Entao, ja vamos definir a Classe dela: col-acoes 
+      * e vamos definir aqui, por ora, dois botoes: um para edicao, eles ainda nao vao funcionar, so vao ficar no layout 
+      * para compor o layout, ainda nao funcionar, mas, em aulas futuras, a gente muda isso, a gente colocar funcoes neles. 
+      * Vamos, por enquanto, definir um icone para o botao que a gente esta utilizando como icone de edicao: fa-pencil. O tipo desse
+      * botao: button, nao eh um botao de submit. Vamos definir, tambem, um tooltip com o valor 'Editar' e tooltipPosition como topo:
+      * o topo em relacao ao botao.
+      *
+      * 17. Agora, vamos definir o botao de exclusao que, ainda, nao vai fazer nada, mas a gente vai defini-lo aqui. O icone dele
+      * eh o da lixeira, fa-trash. O botao tambem eh do tipo button. pTooltip tera o valor 'Excluir' e tambem a posicao do tooltip
+      * vai ser no topo.
+      *
+      * 18. Vamos incluir so mais um <ng-template>, com pTemplate como emptymessage, para a gente incluir a Empty Message.
+      * Vamos definir outra <tr> e uma <td> com colspan de 4 colunas. A mensagem que iremos definir eh: 'Nenhum contato cadastrado.'
+      *
+      * Agora, podemos testar. Vamos entrar no Cadastro de Pessoas: Pagina Pessoas, http://localhost:4200/pessoas e clicar no
+      * link Editar do registro de Joao Silva, que nos sabemos que tem um registro de Contato e o Contato eh exibido para a 
+      * gente na Grid. Entao, nos conseguimos ajustar o layout e dar o nosso primeiro passo com relacao a nossa tela 
+      * mestre-detalhe.
+      * Fim da Aula 23.11. Listando Contatos na Tela Mestre-Detalhe.
+    -->
+  <!--
+    * Aula 23.12. Criando o Dialogo de Contato
+
+    * Nesta aula aqui, a gente vai incluir um Dialogo dentro da nossa Pagina para a gente poder, dentro desse Dialogo, colocar 
+    * o Formulario para Insercao e Edicao de Contatos de uma Pessoa.
+
+    * Entao, para isso, nos vamos abrir a nossa Pagina HTML pessoa-cadastro.component.html.
+
+    * 1. No final da Pagina, nos vamos adicionar o nosso componente, que eh o Dialog. Inclusive, nos precisamos adicionar
+    * esse componente la na Classe do Modulo, pessoas.module.ts, na Secao de Imports para podermos utilizar a tag <p-dialog>.
+    * Ver pessoas.module.ts.
+    * 
+    * 3. Vamos setar um titulo com o atributo header como Novo Contato. Depois, nos vamos alterar isso, porque, no momento da Edicao,
+    * vai aparecer Editando Contato e, no momento da Insercao, Novo Contato.
+    *
+    * 4. Vamos, tambem, utilizar o atributo visible com Two-Way Data Binding. Como valor, vamos definir uma propriedade que vai ter
+    * que existir la na nossa Classe, indicando se eh para esse Dialogo estar visivel ou nao. Vamos chamar essa propriedade de
+    * exibindoFormularioContato. A partir dessa variavel, nos vamos controlar se o nosso Dialogo vai aparecer ou nao.
+    *
+    * 5. Em seguida, vamos definir o atributo modal para definir que esse Dialogo aqui eh um modal.
+    *
+    * 6. Agora, vamos voltar na Classe pessoa-cadastro.component.ts e vamos criar essa a propriedade exibindoFormularioContato.
+    * Ver pessoa-cadastro.component.ts.
+    *
+    * 7. Ja podemos fazer um teste. Vamos definir um botao que vai abrir esse Dialogo. Ele vai ficar um pouco acima da nossa Grid
+    * (Tabela de Contatos). Logo acima da Grid, vamos criar uma nova div: <div class="ui-g-12"> e, dentro dela, vamos adicionar o
+    * botao com a tag <button>, atributo pButton do PrimeNG, label como 'Novo' e vamos definir um icone tambem, fa-plus, ou seja,
+    * um icone de +, para indicar que eh um novo. Atributo type como 'button'. Vamos definir a Classe 'ui-button-secondary', 
+    * porque queremos que esse botao fique branco. Geralmente, os botoes azuis a gente usa para fazermos submissoes de formularios.
+    * Esse aqui, como ele vai somente abrir um Dialogo, nos queremos que ele seja diferente.
+    *
+    * 8. Agora, vamos definir um evento de click para o botao, com o event binding, onde ele vai chamar um metodo la na nossa Classe
+    * PessoaCadastroComponent que vai abrir o nosso Dialogo. O nome do metodo vai ser prepararNovoContato() e nos vamos criar esse
+    * novo metodo na Classe PessoaCadastroComponent. Ver pessoa-cadastro.component.ts.
+    *
+    * 10. Ja podemos testar. Abrir o Browser: http://localhost:4200, acessar a Pagina de Pessoas, acessar o primeiro registro do 
+    * Joao Silva e nos temos o botao do Novo Contato. Ao Clicar no botao Novo, a modal de Dialogo aparece.
+    * 
+    * 11. O objetivo desta aula foi concluido, nos criamos o nosso Dialogo, o botao para abrir o nosso Dialogo. Na proxima aula,
+    * a gente coloca o Formulario de Contato dentro do nosso Dialogo.
+    * Fim da Aula 23.12. Criando o Dialogo de Contato.
+    *
+  -->
+  <!-- 
+    * Aula 23.15. Corrigindo Estilo do botao "Novo"
+    *
+    * Esta aqui eh uma aula para a gente corrigir uma coisa que nem tem a ver a nossa funcionalidade de Mestre-Detalhe. Mas, 
+    * ao passar o mouse pelo botao Novo, na Pagina Nova Pessoa, ele fica azul. Entao, estranhamos isso, pois o comportamento 
+    * normal eh que ele ficasse Cinza, nao Azul. Entao, esta aula aqui eh para corrigir esse detalhe.
+    *
+    * E, para fazer isso, vamos no arquivo angular.json e, se isso estiver acontecendo conosco, nos devemos puxar o CSS 
+    * theme.css para cima do CSS primeng.min.css. Ai, dessa forma, nos, primeiramente, devemos salvar o arquivo. Quando se 
+    * editar esse arquivo angular.json, deve-se iniciar novamente o servidor. 
+    *
+    * Agora, vamos testar, em http://localhost:4200/pessoas/1, para verificar o comportamento que deve ser. Passando o mouse por 
+    * cima do botao Novo, agora ele aparece Cinza e eh esse o comportamento que esse botao Branco tem que ter: ao inves de ficar 
+    * Azul ao passar o mouse por cima, ele fica um pouco Cinza.
+  -->
+  <!-- 
+    * Aula 23.16. Editando o Contato
+    *
+    * E, nesta aula aqui, o que a gente vai fazer eh preparar a Edicao de um Contato. Na verdade, a gente vai editar um Contato 
+    * e persisti-lo quando a Pessoa-Pai desse Contato for Salva. 
+    *
+    * 1. Entao, para fazer isso, vamos la ate o nosso botao de Edicao que a gente ja incluiu na Grid, aqui na Table, mas nos ainda 
+    * nao demos Acao para ele. Entao, nos vamos incluir um evento de Clique nele, com Event Bindign, e vamos chamar um metodo 
+    * parecido com o do botao Novo, mas, aqui, vai se chamar prepararEdicaoContato(), passando o Contato corrente.
+    *
+    * 2. Vamos, agora, abrir a Classe PessoaCadastroComponent para criarmos esse metodo prepararEdicaoContato().
+    * Ver pessoa-cadastro.component.ts.
+    * 
+  -->
+  <!--
+    * Aula 23.16. Editando o Contato
+    * 18. Passar o index para o metodo prepararEdicaoContato().
+    * Como que a gente vai fazer isso? Aqui, na table, na tag <ng-template pTemplate="body" let-contato>,
+    * de forma parecida como definimos a variavel let-contato, nos podemos definir assim tambem:
+    * let-rowIndex. Dessa forma, nos pegamos o indice do registro. Entao, nos vamos metodo
+    * prepararEdicaoContato(), no botao Editar e passamos rowIndex como segundo parametro.
+    * Dessa forma, a gente tem acesso ao indice.
+    *
+    * 19. Vamos fazer um teste aqui, entao. Vamos testar, em http://localhost:4200/pessoas/1, o Ultimo Registro, Teste 2,
+    * ate porque o Ultimo Registro fica melhor de visualizarmos a Grid enquanto estamos alterando o Registro no Dialogo.
+    * Alterar para: Nome: 'Teste Alterado' e, agora, clicar no botao Confirmar. Na Grid, 'Teste 2' tem que sumir e tem que passar
+    * a ser 'Teste Alterado'.
+    * 
+    * 20. Nao deu certo. Na Grid, continua como 'Teste 2'. O que acontece eh o indice nao foi passado direito. O que devemos 
+    * fazer eh definir um valor em let-rowIndex, conforme abaixo:
+    * let-rowIndex="rowIndex"
+    * Definimos o valor com o mesmo nome ao qual ja tinhamos definido para a variavel.
+    *
+    * 21. Agora, vamos testar novamente. Vamos mandar editar o Registro 'Teste 2' com o valor 'Teste Alterado'. Ao clicar em 
+    * Confirmar, o Ultimo Registro, na Grid, fica alterado para 'Teste Alterado'.
+    *
+    * 22. Dessa forma, nao podemos deixar rowIndex sem valor. Aqui, definimos o mesmo nome, porque ja era o nome que nos estavamos
+    * utilizando aqui. 
+    *
+    * 23. Entao, nos tivemos essa questao aqui agora da Edicao funcionando.
+    *
+    * 24. Vamos, agora, tentar incluir um Novo Contato, para ver se o Novo Registro vai para quinta posicao, como o esperado, 
+    * porque nos alteramos o metodo de inclusao tambem, ou seja, o metodo confirmarContato(). Nome: 'Teste Novo', E-mail:
+    * 'teste@algamoney.com', Telefone: '(12) 31231-2312' e vamos clicar em Confirmar.
+    *
+    * 25. Funcionou. O Novo Registro foi adicionado na Grid, na quinta posicao.
+    *
+    * 26. Com isso, nos alteramos um Registro, que, antes, era 'Teste 2' e, agora, eh 'Teste Alterado'. Agora, vamos Salvar Pessoa,
+    * ou seja, clicar no botao Salvar.
+    *
+    * 27. Retornou do nosso Backend a mensagem: 'Pessoa alterada com sucesso!'. Agora, vamos apertar F5 para conferir se a gente 
+    * vai ter esses mesmos 5 Contatos e, no Registro de 'Teste Alterado', nao pode ser 'Teste 2', tem que continuar 
+    * 'Teste Alterado' e o Registro de 'Teste Novo' tem que continuar na Grid quando apertarmos F5.
+    *
+    * 28. Como esperado, o Registro em 'Teste Alterado' foi alterado, agora nos temos condicoes de alterar um Contato e, tambem,
+    * a gente continua, com o metodo confirmarContato(), com a inclusao de um Novo Registro funcionando, apesar da modificacao
+    * que a gente fez.
+    * Fim da Aula 23.16. Editando o Contato.
+  -->
+  <!--
+    * Aula 23.17. Removendo Contato
+    * 
+    * E, agora, a gente ja pode fazer a remocao de um Contato de dentro da nossa Lista de Contatos que esta em Pessoa.
+    * 
+    * Para fazer a Remocao, eh bem simples. 
+    *
+    * 1. Nos vamos, no botao de Excluir o Contato, definir o evento de Click, com Event Binding, 
+    * chamando o metodo removerContato(), onde vai passar o indice (rowIndex) do contato que vai ser removido, porque nao vai ficar 
+    * precisando procurar esse contato dentro do array.
+    *
+    * 2. Vamos, agora, criar o metodo removerContato() na Classe pessoa-cadastro.component.ts.
+    * Ver pessoa-cadastro.component.ts.
+    * 
+    * 4. Agora, podemos ja testar. Vamos abrir o Browser, em http://localhost:4200/pessoas/1. Vamos atualizar a Pagina com F5.
+    * Vamos remover o Registro 'Teste', o terceiro Registro da Grid de Contatos, clicando no icone 'Excluir'. Ele sumiu da Grid.
+    *
+    * 5. Vamos mandar Salvar agora. A Aplicacao retornou a mensagem 'Pessoa alterada com sucesso!'. Vamos apertar F5 e o Registro
+    * 'Teste' sumiu da Grid.
+    * Vamos aproveitar e excluir os outros 2 Registros de Teste: 'Teste Alterado', 'Teste Novo'. Excluiu os 2 Registros da Grid de 
+    * Contatos. Vamos mandar Salvar. A Aplicacao retornou a mensagem: 'Pessoa alterada com sucesso!'. F5 para confirmar. E, realmente,
+    * a nossa exclusao ja esta funcionando, a gente ja tem uma Exclusao de Contatos.
+    * Fim da Aula 23.17. Removendo Contato.
+  -->
+  <!--
+    * Aula 23.18. Criando Componente de Contatos
+    *
+    * Bom, nesta aula aqui, a gente vai Componentizar essa parte de Contatos de uma 
+    * Pessoa. Entao, nos vamos pegar tudo o que tem a ver com Contato, que esta dentro de Pessoa e vamos colocar isso em outro 
+    * Componente, que nos vamos chamar de pessoa-cadastro-contato. Entao, nos vamos pegar a Grid de Contato e o Dialogo que esta 
+    * mais embaixo e vamos substituir por esse novo Componente que vamos criar agora.
+    *
+    * Como a gente ja sabe que esta funcionando, vai ser simples essa alteracao, essa Componentizacao da parte de Contatos de uma 
+    * Pessoa.
+    *
+    * 1. Entao, nos vamos abrir o Terminal e vamos digitar o comando:
+    *
+    * ng g c pessoas/pessoa-cadastro-contato --spec=false
+    *
+    * 2. Esse componente vai estar dentro do pacote de pessoas e vai se chamar pessoa-cadastro-contato.
+    * Gerou o Componente e atualizou pessoas.module.ts.
+    *
+    * 3. A gente vai passar, agora, o Codigo que esta em pessoa-cadastro.component.html para pessoa-cadastro-contato.html.
+    * Vamos abrir a pasta pessoa-cadastro-contato. Vamos abrir, primeiramente, o HTML, pessoa-cadastro-contato.html.
+    * Vamos deixar so os 2 HTMLs abertos: pessoa-cadastro.component.html e pessoa-cadastro-contato.component.html.
+    *
+    * 4. Vamos voltar no HTML de pessoa-cadastro.component.html e vamos copiar a parte de Contato, somente a parte que esta dentro 
+    * da tag <panel>:
+    * <p-panel header="Contatos">
+    *  {{Copiar tudo que esta dentro da tag <panel>}}
+    * </p-panel>
+    *
+    * 5. Vamos Comentar e Copiar a parte de Contato e vamos colar a parte selecionada, agora, 
+    * em pessoa-cadastro-contato.component.html.
+    * Ver pessoa-cadastro-contato.component.html.
+    *
+    * 8. Vamos, agora, Comentar e Copiar a parte de Dialogo e vamos colar a parte selecionada em
+    * pessoa-cadastro-contato.component.html.
+    *
+    * 12. Vamos, agora, dentro da tag <panel>, utilizar esse novo Componente: <app-pessoa-cadastro-contato>.
+    *
+    * 13. Voltar, agora, para o novo Componente pessoa-cadastro-contato.component.html.
+    *
+    * 34. Vamos, agora, definir dentro da tag <app-pessoa-cadastro-contato> a propriedade @Input() contatos definida
+    * em pessoa-cadastro-contato.component.ts.
+    * 
+    * 35. Repare-se que esta sendo feito um Binding com a Propriedade e o valor desse atributo vai ser pessoa.contatos. Dessa
+    * forma, a gente passa a Lista que a gente precisa trabalhar la para o nosso Sub-Componente, ou seja, 
+    * pessoa-cadastro-contato.component.ts.
+    *
+    * 36. Voltar para pessoa-cadastro-contato.component.ts.
+  -->    
+      <div class="ui-g-12">
+        <p-panel header="Contatos">
+          <app-pessoa-cadastro-contato [contatos]="pessoa.contatos"></app-pessoa-cadastro-contato>
+        <!--
+          <div class="ui-g">
+            <div class="ui-g-12">
+              <button pButton label="Novo" icon="fa-plus" type="button"
+                  class="ui-button-secondary"
+                  (click)="prepararNovoContato()"></button>
+            </div>
+            <div class="ui-g-12">
+              <p-table [value]="pessoa.contatos" [responsive]="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th class="col-acoes-header"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-contato
+                  let-rowIndex="rowIndex">
+                  <tr>
+                    <td>{{ contato.nome }}</td>
+                    <td>{{ contato.email }}</td>
+                    <td>{{ contato.telefone }}</td>
+                    <td class="col-acoes">
+                      <button pButton icon="fa-pencil" type="button"
+                          pTooltip="Editar" tooltipPosition="top"
+                          (click)="prepararEdicaoContato(contato, rowIndex)"></button>
+                      <button pButton icon="fa-trash" type="button"
+                          pTooltip="Excluir" tooltipPosition="top"
+                          (click)="removerContato(rowIndex)"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="4">
+                      Nenhum contato cadastrado.
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        -->
+        </p-panel>
+      </div>
+
+      <div class="ui-g-12">
+        <button pButton type="submit" label="Salvar" [disabled]="f.invalid"></button>
+        <button pButton type="button" label="Novo" class="ui-button-info"
+            (click)="novo(f)"></button>
+
+        <a routerLink="/pessoas">Voltar para a pesquisa</a>
+      </div>
+    </div>
+
+  </form>
+</div>
+<!--
+  * Aula 23.13. Criando o Formulario de Contato
+  *
+  * Vamos aqui, entao, continuar com a construcao do nosso Dialogo. E, nessa aula aqui, a gente vai colocar o formulario 
+  * aqui dentro do nosso Dialogo.
+  *
+  * 1. Ja vamos definir o Formulario, com a tag <form>. Para o nosso formulario, vamos criar uma variavel chamada frmContato,
+  * com o valor ngForm. O submit nos vamos definir depois.
+  *
+  * 2. Agora, nos vamos definir os componentes de entrada: nome, e-mail e telefone. Vamos definir a div com a classe ui-g
+  * com 12 posicoes. Vamos definir tambem a classe ui-fluid, definindo que esta div eh fluida.
+  *
+  * 3. Agora, vamos definir um Label, onde vamos escrever Nome, simplesmente. Vamos definir, em seguida, um input normal, definindo
+  * o atributo pInputText do PrimeNG. O type vai ser text. Atributo name como 'nome'. Esse atributo vai ser required. Vamos incluir
+  * tambem aqui o ngModel, fazendo Two Way Data Binding. O valor vai ser contato.nome. Essa variavel contato tambem precisa ser
+  * criada em PessoaCadastroComponent. Ver pessoa-cadastro.component.ts.
+  *
+  * 4. Agora, precisamos definir a tag de validacao. Para utilizar aquela tag de validacao, nos precisamos criar a variavel
+  * que chamaremos de #contatoNome, com o valor ngModel. Essa eh a variavel que a gente vai utilizar no nosso na nossa tag
+  * de validacao, que eh a <app-message>.
+  *
+  * 5. Definimos a tag <app-message>. Em seguida, definimos o atributo control, com property binding e passamos a variavel
+  * #contatoNome. O tipo do erro eh required. O texto eh 'Informe o nome'.
+  *
+  * 6. Vamos copiar essa div e colar embaixo para criar a proxima, que vai ser a do E-mail. Vai mudar, obviamente, o Label. Vamos 
+  * mudar o tipo do input, que vai ser email. O name, obviamente, tambem vai mudar para email. No ngModel, email tambem. A
+  * variavel muda para contatoEmail. Na validacao, a gente vai ter contatoEmail para o atributo control. O atributo text
+  * muda para 'Informe o email'. Alem da validacao definindo que o email eh requerido, vamos adicionar tambem a validacao em 
+  * que vamos definir o atributo email, porque queremos validar o formato de email para que seja um email valido. Inclusive,
+  * vamos copiar a tag <app-message> e definir uma mensagem de validacao para email:
+  * <app-message [control]="contatoEmail" error="email" text="Informe um email valido."></app-message>
+  *
+  * 7. Agora, vamos copiar/colar a div de Nome para definirmos Telefone. Trocar, ao inves de Nome, Telefone em Label. O atributo
+  * type vai ser 'text', a propriedade name vai ser 'telefone', o atributo ngModel vai ser contato.telefone, a variavel
+  * vai ser definida como contatoTelefone e nao vamos definir o telefone como requerido, portanto, vamos remover a tag
+  * <app-message>.
+  *
+  * 8. Aqui, em Telefone, nos queremos utilizar o campo mask para o tipo de entrada de texto, onde a gente tem a possibilidade de
+  * incluir uma mascara para esse Telefone.
+  * E, para isso, nos vamos importar o Componente InputMask na Secao Imports de PessoasModule. 
+  * Ver pessoas.module.ts.
+  * Verificamos que ja foi importado, portanto, ja podemos utilizar a tag correspondente <p-inputMask>. O name vai ser
+  * 'telefone', ngModel vai ser 'contato.telefone'. Agora, vamos definir a mascara do nosso telefone com o atributo mask.
+  * Vamos definir assim: vamos colocar os digitos do DDD (99) e, em seguida, definir 5 posicoes: 99999 + traco + 3 posicoes: -999.
+  * Vamos adicionar uma interrogacao (?), definindo que, depois dessa interrogacao que eh opcional e vamos definir mais um digito: 9.
+  * Entao, a gente pode ter aqui 9 digitos mais o DDD. Vamos fechar a tag.
+  * 
+  * 9. Vamos adicionar uma nova div, onde vamos definir um botao que vai submeter esse formulatrio. Vamos definir class 
+  * com ui-g com 12 posicoes. Em seguida, definimos Button com atributo pButton do PrimeNG, atributo type do tipo submit, 
+  * atributo label como 'Confirmar' e aqui vai estar desabilitado caso o Formulario nao seja valido, atributo disabled definido
+  * com property binding.
+  *
+  * 10. Agora, ja podemos fazer um teste, em http://localhost:4200/pessoas/1. Ocorreu um erro: ERROR TypeError: Cannot read 
+  * property 'nome' of undefined. Isso eh porque, como o nosso Dialogo so 
+  * aparece quando a propriedade exibindoFormularioContato estiver 'true', so que o nosso Formulario ja esta presente na nossa
+  * Pagina. E o que esta acontecendo? Esta tentando utilizar a propriedade nome de contato, so que contato a gente ainda nao 
+  * inicializou, a gente so inicializa quando torna a propriedade exibindoFormularioContato como 'true' la no metodo 
+  * prepararNovoContato() da Classe PessoaCadastroComponent. 
+  * Entao, o que nos temos que fazer? Nos temos que definir, na tag <p-dialog>, a diretiva *ngIf, onde so vai exibir se tiver
+  * contato. Isso corrige o erro.
+  *
+  * 11. Agora, ja podemos fazer um teste, em http://localhost:4200/pessoas/1, clicar no botao Novo, surge o Dialogo Modal 
+  * Novo Contato, com o botao de Confirmar delabilitado. Comecamos preenchendo o campo Nome, em seguida o campo E-mail. Verifica-se
+  * que a validacao do campo E-mail esta funcionando, quando o E-mail nao esta valido, aparece a mensagem:
+  * 'Informe um email valido'. Ao preencher os Campos Nome e E-mail, eh habilitado o botao Confirmar.
+  * Ao preencher o campo Telefone, verificamos que o ultimo digito eh opcional, ao tentar informar menos de 8 digitos, o campo
+  * fica vazio.
+  * 
+  * 12. Nas proximas aulas, nos vamos ajustando as acoes necessarias, que sao as acoes de Edicao, Confirmar: confirmar tanto um 
+  * um Novo Contato quanto o Contato que esta sendo editado.
+  * Fim da Aula 23.13. Criando o Formulario de Contato.
+-->
+<!--
+  * Aula 23.14. Incluindo um Novo Contato
+
+  * O que a gente vai fazer aqui nesta aula eh confirmar um Novo Contato e salvar esse Contato no nosso Cadastro de Pessoa.
+
+  * Para fazer isso, o que a gente vai ter que fazer eh simplesmente incluir essa nova instancia de Contato la na lista que a 
+  * gente tem de Pessoa, porque a gente so vai salvar um Contato quando a Pessoa for salva. 
+  *
+  * 1. Entao, para realizar isso, nos vamos ter que vir ate o nosso Dialogo, ou seja, no final da nossa Pagina de 
+  * pessoa-cadastro.component.html. No nosso Formulario, na tag <form>, nos vamos chamar por event binding, com ngSubmit, o 
+  * metodo confirmarContato(), passando o formulario, que eh frmContato.
+  *
+  * 2. Nos estamos definindo como 'confirmar' tanto o metodo quanto o botao que vai submeter esse formulario, justamente pela questao
+  * que mencionamos: a gente nao vai salvar o Contato quando esse Formulario for submetido. A gente vai, simplesmente, adicionar o
+  * Contato do Formulario na Lista de Contatos da Pessoa. Entao, por isso que estamos utilizando o termo 'Confirmar' e nao o termo
+  * 'Salvar', como nos outros formularios que a gente tem para o proprio Formulario de Pessoa e o Formulario de Lancamento.
+  *
+  * 3. Agora, vamos construir esse metodo de confirmarContato() na Classe pessoa-cadastro.component.ts, que vai confirmar um 
+  * Contato. Ver pessoa-cadastro.component.ts.
+  *
+  * 5. Agora, ja podemos testar para incluirmos um Novo Contato. Abrir o Browser: http://localhost:4200/pessoas/1, vamos Clicar no
+  * Botao Novo, aparece o Dialogo Modal Novo Contato. Vamos cadastrar um Novo Contato: Nome: 'Francisco Silva', E-mail: 
+  * 'francisco@algamoney.com', Telefone: (51) 99999-9999. Vamos Clicar no botao Confirmar. Verifique-se que, na nossa Grid, so
+  * temos um registro. Clicamos: o Dialogo fecha e eh adicionado esse registro na Grid.
+  * 
+  * 6. Ele, ainda, nao esta na base de dados, esse registro de 'Francisco Silva'. Ele so vai para a base de dados quando clicarmos
+  * no botao Salvar. Entao, vamos clicar no botao Salvar, surge a mensagem: 'Pessoa alterada com sucesso!'.
+  *
+  * 7. Vamos apertar F5 no Browser e verifica-se que o Contato foi adicionado na base de dados.
+  *
+  * 8. Agora, vamos Clicar no botao Novo, de novo, para incluirmos um registro de teste: Nome: 'Teste', E-mail:
+  * 'testes.algaworks@gmail.com', Telefone: '(99) 99999-9999' pelo seguinte: nos vamos confirmar, apertando no botao Confirmar,
+  * e nos vamos abrir o Dialogo novamente para verificar como que esta esse Dialogo. Ao abrir o Dialogo, todos os campos estao com 
+  * mensagens de validacao solicitando o preenchimento.
+  *
+  * 9. Repare-se que, ao Clicar no botao Novo, foi chamado o metodo prepararNovoContato() e, como o nosso Formulario ja estava sujo
+  * no cadastro anterior, o que aconteceu foi que, como o Formulario esta sujo, as validacoes estao sendo exibidas. 
+  * Entao, nos temos que corrigir isso. Inclusive, no metodo confirmarContato(), a gente ja esta recebendo o Formulario 
+  * para dar um reset() nele. Ver pessoa-cadastro.component.ts, metodo confirmarContato().
+  *
+  * 11. Vamos fazer um novo teste. Apertar F5 no Browser para realizarmos um novo teste. Clicar no botao Novo, cadastrar:
+  * Nome: 'Teste', E-mail: 'testes.algaworks@gmail.com', Telefone: (99) 99999-9999. Clicar em Confirmar e surge um Registro Vazio
+  * na Grid. O que que aconteceu?
+  *
+  * 12. Quando a gente confirma, a gente esta dando, agora, um reset() no nosso Formulario. Repare-se que, ao abrir o Dialogo novamente,
+  * ele vai estar limpo, tudo okay. So que o Formulario limpou tambem o Registro que estava vinculado ao Formulario ainda. O que que
+  * nos vamos ter que fazer para corrigir isso, entao? Nos vamos precisar criar uma nova instancia de Contato antes de dar o push(),
+  * no metodo confirmarContato(), na Classe pessoa-cadastro.component.ts. Ver pessoa-cadastro.component.ts.
+  *
+-->
+<!--
+    * Aula 23.18. Criando Componente de Contatos
+    * 8. Vamos, agora, Comentar e Copiar a parte de Dialogo e vamos colar a parte selecionada em
+    * pessoa-cadastro-contato.component.html.
+    * Ver pessoa-cadastro-contato.component.html.      
+-->
+<!--
+<p-dialog header="Novo Contato" 
+    [(visible)]="exibindoFormularioContato" 
+    modal="modal"
+    *ngIf="contato">
+  <form #frmContato="ngForm"
+    (ngSubmit)="confirmarContato(frmContato)">
+    <div class="ui-g-12 ui-fluid">
+      <label>Nome</label>
+      <input pInputText type="text" name="nome" required 
+          [(ngModel)]="contato.nome" 
+          #contatoNome="ngModel" />
+      <app-message [control]="contatoNome" error="required" text="Informe o nome."></app-message>
+    </div>
+    <div class="ui-g-12 ui-fluid">
+        <label>E-mail</label>
+        <input pInputText type="email" name="email" required email
+            [(ngModel)]="contato.email" 
+            #contatoEmail="ngModel" />
+        <app-message [control]="contatoEmail" error="required" text="Informe o email."></app-message>
+        <app-message [control]="contatoEmail" error="email" text="Informe um email valido."></app-message>
+      </div>
+      <div class="ui-g-12 ui-fluid">
+          <label>Telefone</label>
+          <!--
+          <input pInputText type="text" name="telefone"
+              [(ngModel)]="contato.telefone" 
+              #contatoTelefone="ngModel" />
+          --
+          <p-inputMask name="telefone" [(ngModel)]="contato.telefone"
+              mask="(99) 99999-999?9"></p-inputMask>
+      </div>
+      <div class="ui-g-12">
+        <button pButton type="submit" label="Confirmar" [disabled]="frmContato.invalid"></button>
+      </div>
+  </form>
+</p-dialog>
+-->

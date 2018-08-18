@@ -1,0 +1,54 @@
+<app-navbar *ngIf="exibindoNavBar()"></app-navbar>
+<!-- A diretiva <router-outlet> funciona como um placeholder, onde o Angular
+  preenche, dinamicamente, baseado na rota atual. -->
+<router-outlet></router-outlet>
+
+
+<!--
+  <app-pessoa-cadastro></app-pessoa-cadastro>
+  
+  <app-lancamentos-pesquisa></app-lancamentos-pesquisa>
+  
+  <app-pessoas-pesquisa></app-pessoas-pesquisa>
+  
+  <app-lancamento-cadastro></app-lancamento-cadastro>  
+
+  
+-->
+
+<!-- Adicionar no app-component.html o Componente ng2-toasty.
+Tem que adicionar aqui para exibir a mensagem.
+Quando se registra a mensagem de sucesso, se registra a mensagem 
+atraves de um Servico. Mas quem vai exibir a mensagem eh o Componente <ng2-toasty/>.
+Utiliza o Servico para se comunicar com o Componente.
+ -->
+<!--ng2-toasty></ng2-toasty-->
+<!--
+  * Aula 25.06. Usando o Growl
+  * 
+  * 3.1. Agora, vamos abrir app.component.html e vamos trocar a tag <ng2-toasty> por <p-growl>.
+  * 
+  * 4. Agora, nos vamos ter que alterar nos pontos onde a mensagem eh adicionada. Essas mensagens sao adicionadas nas Classes dos 
+  * Componentes. Vamos, primeiramente, em error-handler.service.ts.
+  * Ver error-handler.service.ts.
+  *
+  -->
+  <p-growl></p-growl>
+
+
+<!-- Propriedade icon: fa de font-awsome -->
+<!-- Para dizer ao ConfirmDialog que o Usuario clicou no Sim/Nao, criar uma variavel 
+  referenciando a instancia do Componente ConfirmDialog.
+  No click do botao, chamar o metodo accept()/reject() do componente ConfirmDialog. -->
+<p-confirmDialog header="Confirmação" icon="fa fa-question-circle" #confirmacao>
+  <!-- <p-footer/> para definir o rodape, pois os botoes estao no rodape. -->
+  <p-footer>
+    <!-- fa-check eh o icone de checagem -->
+    <!-- Fazer um Event-Binding do click() do Botao Sim. -->
+    <button type="button" pButton icon="fa-check" label="Sim"
+      (click)="confirmacao.accept()"></button>
+    <!-- icone times eh um x -->
+    <button type="button" pButton icon="fa-times" label="Não"
+      (click)="confirmacao.reject()"></button>
+  </p-footer>
+</p-confirmDialog>

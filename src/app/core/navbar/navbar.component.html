@@ -1,0 +1,98 @@
+<nav class="navbar">
+
+  <div class="container">
+    <div class="ui-g">
+      <div class="ui-g-12">
+        <a href="javascript:;" class="navbar-toggle" (click)="exibindoMenu = !exibindoMenu"><i class="fa fa-bars"></i></a>
+        <!-- Botao Provisorio para testar o metodo obterNovoAccessToken() -->
+        <!--<button type="button" (click)="criarNovoAccessToken()">Novo Access Token</button-->
+      </div>
+    </div>
+  </div>
+
+  <ul class="navbar-menu" [hidden]="!exibindoMenu">
+    <!-- 
+      Exibindo o nome do usuario logado
+
+      O nome do Usuario logado esta fixo no nosso Template. Nao eh o Jose da Silva que esta logado 
+      neste momento, eh o Usuario Administrador. Entao, vamos, nesta aula, alterar o Template para 
+      mostrar o nome real do Usuario logado.
+
+      Para isso, vamos abrir o Componente NavbarComponent (navbar.component.html), o Template desse 
+      Componente:
+
+      <li class="navbar-usuario">José da Silva</li>
+
+      Vamos definir uma interpolacao para pegar o nome dinamicamente de quem esta realmente logado.
+      Mas, antes de definir a interpolacao, precisamos ter acesso, nesse Componente NavbarComponent,
+      eh necessario ter acesso ao Servico AuthService. Entao, vamos injeta-lo no Construtor.
+      Agora, podemos definir a propriedade auth, que eh a propriedade que acabamos de injetar,
+      auth.jwtPayload, que eh a propriedade de AuthService. Dentro desse jwtPayload, nos temos o nome
+      do Usuario logado. So que, se o Usuario nao estiver logado, vai ocorrer problema, porque
+      nao vai estar definido nenhum objeto para a propriedade jwtPayload e vai ocorrer erro, porque
+      nao consegue acessar a propriedade nome de uma variavel indefinida (undefined). Entao,
+      sera utilizado o operador elvis (?), porque, se jwtPayload estiver nao definido (undefined) ou 
+      nulo, nao ocorre erro tentando buscar a propriedade nome.
+
+    -->
+    <!-- li class="navbar-usuario">José da Silva</li -->
+    <li class="navbar-usuario">{{ auth.jwtPayload?.nome }}</li>
+    <!--  
+      * Aula 23.10. Exercicio: Incluindo Itens de Menu: Dashboard e Lancamento
+      * Ficou como exercicio incluir os dois menus que a gente precisa referente as telas novas que a gente criou.
+      * Uma que eh a tela de Dashboard e a outra que eh a tela de Relatorio. Entao, fica esse exercicio para 
+      * completarmos o Projeto.
+      * 1. Aqui vamos incluir o Menu de Dashboard.
+    -->
+    <li class="navbar-menuitem" routerLinkActive="ativo"
+        *ngIf="auth.temPermissao('ROLE_PESQUISAR_LANCAMENTO')"><a routerLink="/dashboard">Dashboard</a></li>
+
+    <!-- Como que a gente faz que a aplicacao da classe CSS ativo seja feito de forma
+    dinamica baseado na rota atual que o Usuario estah? 
+      Usar a diretiva routerLinkActive.
+    Como a Classe ativo foi definido junto a Classe navbar-menuitem, tem que definir o routerLinkActive
+    junto ao <li>.
+    Define a propriedade routerLinkActive com o valor da Classe CSS que quer aplicar: ativo. 
+    O routerLink entende que, como o <li> estah fazendo um wrapper, ou seja, estah embrulhando o 
+      elemento <a>, que eh o do link, ele entende que ele vai aplicar essa Classe CSS ativo apenas se 
+        a gente estiver na rota /lancamentos. -->
+    <!--li class="navbar-menuitem ativo"><a routerLink="/lancamentos">Lançamentos</a></li-->
+    <li class="navbar-menuitem" routerLinkActive="ativo"
+        *ngIf="auth.temPermissao('ROLE_PESQUISAR_LANCAMENTO')"><a routerLink="/lancamentos">Lançamentos</a></li>
+    <li class="navbar-menuitem" routerLinkActive="ativo"
+        *ngIf="auth.temPermissao('ROLE_PESQUISAR_PESSOA')"><a routerLink="/pessoas">Pessoas</a></li>
+    <!--  
+      * Aula 23.10. Exercicio: Incluindo Itens de Menu: Dashboard e Lancamento
+      * Ficou como exercicio incluir os dois menus que a gente precisa referente as telas novas que a gente criou.
+      * Uma que eh a tela de Dashboard e a outra que eh a tela de Relatorio. Entao, fica esse exercicio para 
+      * completarmos o Projeto.
+      * 2. Aqui vamos incluir o Menu de Relatorio.
+    -->
+    <li class="navbar-menuitem" routerLinkActive="ativo"
+        *ngIf="auth.temPermissao('ROLE_PESQUISAR_LANCAMENTO')"><a routerLink="/relatorios/lancamentos">Relatorios</a></li>        
+    <!--
+     * Na ancora de logout, nos definimos um event-binding, passando o metodo logout(),
+     * que vai chamar o metodo logout() do Servico Logout (LogoutService), que vai fazer a 
+     * Requisicao, usando o metodo DELETE da nossa API.
+     * Na volta, a gente limpa o Access Token e, entao, dando tudo certo, a gente redireciona
+     * o Usuario para a Pagina de Login. Dando algo errado, a gente captura o erro.
+    -->
+    <li class="navbar-menuitem"><a href="javascript:;" (click)="logout()">Logout</a></li>
+  </ul>
+
+<!-- Evitar fazer varias requisicoes no servidor web a cada navegacao, a cada vez que a gente
+carrega uma tela, tudo eh carregado novamente. A nossa aplicacao estah sendo reiniciada
+cada vez que a gente navega, a cada refresh. Na verdade, estamos fazendo um refresh da pagina
+inteira e reiniciando a aplicacao. Nisso, o estado da nossa Aplicacao eh perdido e o carregamento
+eh muito mais lento. Tem uma forma mais profissional e eh a forma correta que eh usando o Roteamento
+do Angular, que tem uma diretiva e a gente pode trabalhar com os links e, aí, ele faz tudo pra gente
+de forma transparente e a gente nao ve esse carregamento das paginas. Tambem nao precisa recarregar
+varias coisas, nao precisa fazer requisicao novamente dos arquivos Javascript, a nossa Aplicacao
+nao eh recarregada, a nossa Aplicacao eh inicializada somente uma vez. E as navegacoes sao 
+simplesmente navegacoes que o proprio Angular trata.
+Eh muito facil configurar. Apenas trocar de href para routerLink. 
+routerLink eh uma diretiva do modulo de rotas do Angular. 
+
+Para funcionar, importar no Core Module o Router Module. -->
+
+</nav>

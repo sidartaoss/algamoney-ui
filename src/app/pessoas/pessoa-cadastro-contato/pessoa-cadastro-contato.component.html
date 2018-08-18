@@ -1,0 +1,161 @@
+<!-- 
+  * Aula 23.18. Criando Componente de Contatos
+  * 6. Vamos Comentar e Copiar, em pessoa-cadastro.component.html, a parte selecionada de Contato e vamos colar a parte selecionada, 
+  * agora, em pessoa-cadastro-contato.component.html.
+  *
+  * 7. Agora, vamos trazer, tambem, o Dialogo. 
+  * Voltar para pessoa-cadastro.component.html.
+  *
+  * 9. Vamos Comentar e Copiar, em pessoa-cadastro.component.html, a parte de Dialogo e vamos colar a parte selecionada em
+  * pessoa-cadastro-contato.component.html.
+  *
+  * 10. Vamos, agora, em pessoa-cadastro.component.html, dentro da tag <panel>, utilizar esse novo Componente: 
+  * <app-pessoa-cadastro-contato>.
+  * Ver pessoa-cadastro.component.html.
+  *
+  * 14. Um outro passo que nos precisamos definir aqui eh que, dentro do Componente pessoa-cadastro-contato.component.html, nos
+  * nao vamos ter a propriedade pessoa. Entao, nos teremos que remover essa propriedade. Na tag <p-table>, vai ficar, entao, ao
+  * inves de [value]="pessoa.contatos", [value]="contatos".
+  *
+  * 15. Vamos criar, agora, a propriedade contatos em pessoa-cadastro-contato.component.ts.
+  * Ver pessoa-cadastro-contato.component.ts.
+  *
+  * 17. Na Table, nao eh preciso alterar mais nada, porque a variavel contato eh a variavel
+  * da propria Table. O metodo prepararEdicaoContato() nao eh necessario alterar tambem, porque ja esta utilizando a variavel
+  * contato da propria Table.
+  *
+  * 18. No nosso Dialogo, esta utilizando a propriedade contato, mas essa eh uma propriedade que tem que existir na nossa Classe
+  * PessoaCadastroContatoComponent. Entao, vamos cria-la la.
+  * Ver pessoa-cadastro-contato.component.ts.
+  *
+  * 20. Agora, nos vamos abrir a Classe pessoa-cadastro.component.ts e nos vamos copiar todo o codigo referente a Lista de Contatos
+  * para a Classe pessoa-cadastro-contato.component.ts.
+  * Ver pessoa-cadastro.component.ts.
+  *
+  * 40. Agora, vamos fazer uma Correcao. Nos temos definido fixo, no titulo do Dialogo, o texto 'Novo Contato', so que, quando
+  * estivermos editando um Contato, nos queremos que seja exibido 'Editando Contato'. Para isso, vamos criar o metodo editando()
+  * em pessoa-cadastro-contato.component.ts.
+  * Ver pessoa-cadastro-contato.component.ts.
+  *
+  * 42. Agora, vamos definir o Property Binding no atributo header da tag <p-dialog>
+  * para podermos definir uma expressao no valor do atributo header. Se estiver 'editando', vai exibir 'Edicao Contato', caso 
+  * contrario, vai exibir 'Novo Contato'.
+  *
+  * 43. Agora sim, podemos fazer um teste. Vamos subir o Servidor, ng serve e abrir o Browser: http://localhost:4200/pessoas/1.
+  * Okay, ja Componentizou e a aparencia esta a mesma que anteriormente a Componentizacao.
+  * Ao Clicar no botao Novo e incluir um novo Contato: Nome: 'Teste', E-mail: 'teste@algamoney.com', Telefone: '(99) 99999-9999',
+  * e clicar no botao Confirmar, fechou a a janela de Dialogo e o Registro foi adicionado a Grid de Contatos.
+  * 
+  * 44. Vamos mandar Salvar. Okay, a Aplicacao retornou a mensagem: 'Pessoa alterada com sucesso!'. Conferir com F5 para verificar
+  * se, realmente, o Registro foi persistido e verificamos que sim, foi persistido.
+  * 
+  * 45. Agora, vamos alterar o Registro 'Teste'. A janela de Contato apareceu com o titulo 'Edicao Contato', conforme esperado.
+  * Vamos alterar o Telefone para '(55) 55555-5555'. Ao Clicar em Confirmar, a janela de Dialogo fechou e o Registro de 'Teste'
+  * foi alterado com o Telefone '(55) 55555-5555'. Ao Clicar em Salvar, a Aplicacao retornou mensagem: 'Pessoa alterada com sucesso!'.
+  * 
+  * 46. Ao Clicar no botao Novo, confirmamos que o texto do titulo da janela de Dialogo eh 'Novo Contato', conforme esperado. Ao 
+  * Clicar no icone de Edicao do Registro de 'Teste', confirmamos que o texto do titulo da janela de Dialogo eh 'Edicao Contato'.
+  * Entao, nos conseguimos incluir um Novo Contato e Editar um Contato existente e o titulo da janela de Dialogo esta correto.
+  * Fim da Aula 23.18. Criando Componente de Contatos.
+-->
+<!--
+  * Aula 25.05. Corrigindo Icones
+  * 
+  * 9. Vamos ate os botoes para corrigir os seus icones, conforme atualizacao das dependencias do Angular.
+  * 
+  * 10. Ao inves de definir apenas, no atributo icon, fa-pencil, a gente vai precisar definir mais um
+  * fa, fa fa-pencil.
+  *
+  * 11. Ao testar, http://localhost:4200/pessoas/1, verificamos que corrigiram-se os icones dos botoes.
+  *
+  * 12. Agora, vamos resolver a questao dos botoes estarem grudados, praticamente. Vamos abrir o arquivo style.css.
+  * Ver style.css.
+  *
+-->
+<div class="ui-g">
+    <div class="ui-g-12">
+      <!--button pButton label="Novo" icon="fa-plus" type="button"
+          class="ui-button-secondary"
+          (click)="prepararNovoContato()"></button-->
+      <button pButton label="Novo" icon="fa fa-plus" type="button"
+          class="ui-button-secondary"
+          (click)="prepararNovoContato()"></button>          
+    </div>
+    <div class="ui-g-12">
+      <p-table [value]="contatos" [responsive]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th class="col-acoes-header"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-contato
+          let-rowIndex="rowIndex">
+          <tr>
+            <td>{{ contato.nome }}</td>
+            <td>{{ contato.email }}</td>
+            <td>{{ contato.telefone }}</td>
+            <td class="col-acoes">
+              <!--button pButton icon="fa-pencil" type="button"
+                  pTooltip="Editar" tooltipPosition="top"
+                  (click)="prepararEdicaoContato(contato, rowIndex)"></button-->
+              <button pButton icon="fa fa-pencil" type="button"
+                  pTooltip="Editar" tooltipPosition="top"
+                  (click)="prepararEdicaoContato(contato, rowIndex)"></button>    
+              <!--button pButton icon="fa-trash" type="button"
+                  pTooltip="Excluir" tooltipPosition="top"
+                  (click)="removerContato(rowIndex)"></button-->
+              <button pButton icon="fa fa-trash" type="button"
+                  pTooltip="Excluir" tooltipPosition="top"
+                  (click)="removerContato(rowIndex)"></button>                  
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4">
+              Nenhum contato cadastrado.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+</div>
+<p-dialog [header]="editando ? 'Edicao Contato' : 'Novo Contato'" 
+    [(visible)]="exibindoFormularioContato" 
+    modal="modal"
+    *ngIf="contato">
+  <form #frmContato="ngForm"
+    (ngSubmit)="confirmarContato(frmContato)">
+    <div class="ui-g-12 ui-fluid">
+      <label>Nome</label>
+      <input pInputText type="text" name="nome" required 
+          [(ngModel)]="contato.nome" 
+          #contatoNome="ngModel" />
+      <app-message [control]="contatoNome" error="required" text="Informe o nome."></app-message>
+    </div>
+    <div class="ui-g-12 ui-fluid">
+        <label>E-mail</label>
+        <input pInputText type="email" name="email" required email
+            [(ngModel)]="contato.email" 
+            #contatoEmail="ngModel" />
+        <app-message [control]="contatoEmail" error="required" text="Informe o email."></app-message>
+        <app-message [control]="contatoEmail" error="email" text="Informe um email valido."></app-message>
+      </div>
+      <div class="ui-g-12 ui-fluid">
+          <label>Telefone</label>
+          <!--
+          <input pInputText type="text" name="telefone"
+              [(ngModel)]="contato.telefone" 
+              #contatoTelefone="ngModel" />
+          -->
+          <p-inputMask name="telefone" [(ngModel)]="contato.telefone"
+              mask="(99) 99999-999?9"></p-inputMask>
+      </div>
+      <div class="ui-g-12">
+        <button pButton type="submit" label="Confirmar" [disabled]="frmContato.invalid"></button>
+      </div>
+  </form>
+</p-dialog>

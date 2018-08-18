@@ -1,0 +1,126 @@
+<!--
+
+/**
+ * Aula 23.02. Plotando Graficos com Dados Estaticos
+
+  * Continuando com a nossa Dashboard, nos queremos plotar os graficos na nossa Pagina de Dashboard, 
+  * mesmo que com informacoes estaticas ainda. A gente nao vai buscar os dados de cada grafico la do 
+  * nosso Dashboard, mas nos ja queremos ir ajustando a parte de layout da nossa Pagina. 
+  *
+  * Para isso, nos vamos abrir o aquivo HTML do Componente: dashboard.component.html.
+  *
+  * Ver dashboard.component.html.
+  * 1. Agora, vamos ajustar o HTML da nossa Pagina. Nos ja temos definido o HTML que eh o HTML que a
+  * gente vem usando em todo os nossos componentes de pagina, todos que sao pagina tem essa 
+  * mesma estrutura aqui:
+  * <div class="container">
+  *   <div class="ui-g">
+  *     <div class="ui-g-12">
+  *       <h1>Dashboard</h1>
+  *     </div>
+  *   </div>
+  * </div>
+  *
+  *
+ */
+
+-->
+<div class="container">
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <h1>Dashboard</h1>
+    </div>
+
+    <!--
+      * Aula 23.02. Plotando Graficos com Dados Estaticos
+      * 2. O que iremos construir passo-a-passo eh o lugar onde vai ficar cada painel e, dentro de cada
+      * painel, a gente vai colocar um grafico.
+      * Cada painel vai ficar dentro de uma <div>, que vai ter uma classe, onde nos vamos utilizar, aqui
+      * 12 posicoes, mas, em um monitor de medio para grande, nos queremos utilizar somente a metade
+      * do espaco para cada painel, para cada grafico, vai ter metade do espaco, entao nos vamos definir,
+      * aqui, essas duas classes CSS: ui-g-12, ui-md-6.
+      * Dentro da div, vamos utilizar o componente panel. Do componente panel, vamos utilizar o 
+      * atributo header para definir um titulo para esse painel. Esse primeiro painel nos vamos
+      * chamar de Lancamentos por categoria. Copiar e colar a estrutura dessa div logo abaixo.
+      * Agora, nos vamos importar esse componente de panel (<p-panel>) no modulo dashboard.module.ts:
+      * PanelModule.
+      * Ver os imports de dashboard.module.ts.
+      * 
+      * 3. Ja podemos fazer um teste para observar como que esta esse layout. Vamos abrir o Browser
+      * e digitar http://localhost:8080/4200. Entrou na pagina de Dashboard e temos os dois paineis.
+      * Se diminuirmos a tela, os paineis ficam empilhados um embaixo do outro, ocupando as 12 
+      * posicoes da largura da tela. Entao, esta certo ja o ajuste dele, o layout de cada painel.
+      * 
+      * 4. E, agora, a gente vai comecar a definir os graficos na nossa pagina. Para definir esses
+      * graficos, a gente vai precisar de uma dependencia. Para a gente utilizar o modulo de graficos
+      * do PrimeNG, a gente vai precisar de uma dependencia que eh a biblioteca Chart.js. E a gente
+      * vai fazer essa instalacao agora.
+      * Abrir o terminal e digitar: npm install chart.js --save. Nos vamos salvar porque a gente 
+      * precisa dessa biblioteca para utilizar o modulo do PrimeNG de graficos porque, 
+      * obviamente, o modulo de graficos do PrimeNG utiliza o chart.js.
+      *
+      * 5. Agora, nos vamos precisar abrir o arquivo angular.json e ir na propriedade scripts.
+      * Da mesma forma que a gente definiu arquivos de CSS na propriedade styles, nos vamos
+      * precisar adicionar um arquivo de script na propriedade scripts:
+      * node_modules/chart.js/dist/Chart.js
+      *, para podermos importar o Javascript Chart.js na nossa pagina quando nos formos abri-la,
+      * porque o modulo de graficos do PrimeNG utiliza o Chart.js.
+      * Ver angular.json.
+      *
+      * 6. Agora, vamos importar tambem, no Modulo Dashboard, em dashborad.module.ts, o modulo
+      * de graficos do PrimeNG.
+      * Ver dashboard.module.ts.
+    -->
+    <div class="ui-g-12 ui-md-6">
+      <p-panel header="Lancamentos por categoria">
+        <!--
+          * Aula 23.02. Plotando Graficos com Dados Estaticos
+          * 9. Apos importar o Modulo de Graficos do PrimeNG, podemos definir o grafico
+          * na Pagina HTML.
+          * Vamos definir <p-chart>, ele tem uma propriedade chamada type, onde definimos o 
+          * tipo do grafico. Vamos definir o grafico 'pie' (grafico de pizza). E iremos
+          * definir outra propriedade chamada data que iremos definir depois. Primeiramente,
+          * vamos verificar o comportamento do grafico com o que ja foi definido ate agora.
+          * O grafico vai ficar na nossa pagina ainda sem os dados.
+          *
+          * 11. Para definir informacoes estaticas, vamos definir a propriedade data, fazendo
+          * um property binding com essa propriedade. Como valor dessa propriedade, vamos definir
+          * pieChartData e, de forma parecida, vamos definir para o Line Chart: lineChartData.
+          * Agora, nos vamos na nossa classe DashboardComponent (dashboard.component.ts) e vamos
+          * criar essas duas propriedades.
+          * Ver dashboard.component.ts
+        -->
+        <!--<p-chart type="pie" [data]="pieChartData"></p-chart> -->
+        <!-- 
+          Aula 23.06. Formatando labels no Chart.JS
+          3. Definir o atributo options no Grafico de Pizza, fazendo um property binding.
+        -->
+        <p-chart type="pie" [data]="pieChartData" [options]="options"></p-chart>
+      </p-panel>
+    </div>
+
+    <div class="ui-g-12 ui-md-6">
+        <p-panel header="Lancamentos por dia">
+        <!--
+          * Aula 23.02. Plotando Graficos com Dados Estaticos
+          * 10. Vamos definir o grafico de linha.
+          * Agora, vamos iniciar o servidor: ng serve e vamos abrir o Browser para a gente ver
+          * como eh que fica da forma como definimos ate agora.
+          * Por enquanto, nao aparece praticamente nada, o Grafico de Linhas aparece alguma coisa,
+          * mas o Grafico de Pizza nao aparece nada.
+          * Entao, vamos definir as informacoes estaticas para a gente poder ver o layout desses
+          * graficos, para a gente poder ve-los mais bonitinhos na nossa Pagina.
+          * Ver item 11.
+        -->
+        <!--<p-chart type="line" [data]="lineChartData"></p-chart>-->
+        <!-- 
+          Aula 23.06. Formatando labels no Chart.JS
+          4. Definir o atributo options no Grafico de Linhas, fazendo um property binding.
+          Voltar para dashboard.component.ts.
+        -->
+        <p-chart type="line" [data]="lineChartData" [options]="options"></p-chart>
+        </p-panel>
+      </div>
+
+  </div>
+</div>
