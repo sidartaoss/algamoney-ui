@@ -1,4 +1,4 @@
-# Curso Online Fullstack Angular e Spring
+# Fullstack Angular e Spring
 
 `CONTEÚDO PROGRAMÁTICO`
 1. Introdução ao REST
